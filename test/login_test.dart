@@ -12,7 +12,7 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'user');
     await tester.enterText(find.byType(TextField).last, 'password');
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     // Verify that we have navigated to the home page
     expect(find.text('Welcome to the App!'), findsOneWidget);
@@ -26,7 +26,7 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'invalidUser');
     await tester.enterText(find.byType(TextField).last, 'invalidPassword');
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     // Verify that an error message is displayed
     expect(find.text('Login Failed'), findsOneWidget);
