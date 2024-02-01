@@ -1,14 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:smart_wallet/main.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        backgroundColor: Colors.purple.shade300,
+        leading: IconButton(
+          icon: Icon(
+            Icons.menu,
+            color: Colors.white,
+          ),
+          onPressed: () {},
+        ),
+        title: Text('Smart Wallet'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+            child: Text(
+              'Test:Back to Sign in',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
-      body: const Center(
-        child: Text('Welcome to the App!'),
+      body: Container(
+        color: Colors.purple.shade100,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  ListTile(
+                    title: Text(
+                      'Welcome to your Smart Wallet!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        RaisedButton(
+                          onPressed: () {},
+                          child: Text('Budget'),
+                        )
+                      ]),
+                ],
+              ),
+            ),
+            Container(
+              color: Colors.purple.shade300,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.attach_money, color: Colors.white)),
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.camera_enhance, color: Colors.white)),
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.trending_up, color: Colors.white)),
+                  IconButton(
+                      onPressed: () {}, icon: Icon(Icons.help_center_outlined)),
+                  IconButton(
+                      onPressed: () {}, icon: Icon(Icons.help_center_outlined)),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

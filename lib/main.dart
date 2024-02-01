@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:smart_wallet/pages/home.dart';
 import 'package:smart_wallet/pages/sign_up.dart';
+import 'package:smart_wallet/pages/forgot_password.dart';
+
+
 
 void main() {
   runApp(MyApp());
@@ -85,7 +88,15 @@ class _LoginPageState extends State<LoginPage> {
                 MaterialPageRoute(builder: (context) => SignUp()));
               }, 
               child: Text('Sign Up'),
-              )
+              ),
+
+               ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ForgotPassword()));
+                }, 
+                child: Text('Forgot Password'),
+              ),
           ],
         ),
       ),
