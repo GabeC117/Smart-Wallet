@@ -3,11 +3,19 @@ import 'package:smart_wallet/pages/home.dart';
 import 'package:smart_wallet/pages/sign_up.dart';
 import 'package:smart_wallet/pages/forgot_password.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 
-void main() {
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   @override
