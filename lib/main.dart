@@ -5,7 +5,7 @@ import 'package:smart_wallet/pages/forgot_password.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 
@@ -15,6 +15,8 @@ Future<void> main() async {
   
   runApp(MyApp());
 }
+
+
 
 
 class MyApp extends StatelessWidget {
@@ -33,61 +35,61 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+
+  Future<void> _login() async {
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _usernameController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        // Sign up successful
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign in successful')));
+        // Optionally, navigate the user to another screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } on FirebaseAuthException catch (e) {
+        // Handle errors
+        var message = 'An error occurred. Please try again later.';
+        if (e.code == 'user-not-found') {
+          message = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          message= 'Wrong password provided for that user.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Email (Username is user)'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Password (Password is password)'),
+              decoration: const InputDecoration(labelText: 'Password'),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
-                // Perform login logic here (e.g., check username and password)
-                // For simplicity, a basic check is performed here
-                if (_usernameController.text == 'user' &&
-                    _passwordController.text == 'password') {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
-                } else {
-                  // Show an error message or handle unsuccessful login
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Login Failed'),
-                      content: Text('Invalid username or password.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('OK'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-              child: Text('Login'),
+              onPressed: _login,
+              child: const Text('Login'),
             ),
 
             ElevatedButton(
@@ -95,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUp()));
               }, 
-              child: Text('Sign Up'),
+              child: const Text('Sign Up'),
               ),
 
                ElevatedButton(
@@ -103,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ForgotPassword()));
                 }, 
-                child: Text('Forgot Password'),
+                child: const Text('Forgot Password'),
               ),
           ],
         ),
