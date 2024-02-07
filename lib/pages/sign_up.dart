@@ -30,8 +30,6 @@ class _SignUpState extends State<SignUp> {
           message = 'An account already exists for that email.';
         }
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      } catch (e) {
-        print(e); // For debugging
       }
     }
   }
