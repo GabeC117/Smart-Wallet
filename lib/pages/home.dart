@@ -4,6 +4,7 @@ import 'package:smart_wallet/pages/account.dart';
 import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/graph.dart';
 import 'package:smart_wallet/pages/receipt.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               title: Text('Budget'),
               onTap: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Budget()),
                   );
@@ -94,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   ListTile(
                     title: Text(
-                      'Welcome to your Smart Wallet!',
+                      'Welcome to your Smart Wallet! ${FirebaseAuth.instance.currentUser?.email}',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 40.0,
@@ -108,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                         RaisedButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => Budget()),
                             );
@@ -126,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   IconButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => Budget()),
                             );
@@ -134,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.attach_money, color: Colors.white)),
                   IconButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => Receipts()),
                             );
@@ -142,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                       icon: Icon(Icons.camera_enhance, color: Colors.white)),
                   IconButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => Graphs()),
                             );
