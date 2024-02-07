@@ -19,8 +19,11 @@ class _SignUpState extends State<SignUp> {
           password: _passwordController.text.trim(),
         );
         // Sign up successful
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up successful')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign up successful')));
         // Optionally, navigate the user to another screen
+
+
+
       } on FirebaseAuthException catch (e) {
         // Handle errors
         var message = 'An error occurred. Please try again later.';
@@ -61,7 +64,7 @@ class _SignUpState extends State<SignUp> {
               children: [
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration: const InputDecoration(labelText: 'Email'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -74,7 +77,7 @@ class _SignUpState extends State<SignUp> {
                 ),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: InputDecoration(labelText: 'Password'),
+                  decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -86,10 +89,10 @@ class _SignUpState extends State<SignUp> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _signUp,
-                  child: Text('Sign Up'),
+                  child: const Text('Sign Up'),
                 ),
               ],
             ),
