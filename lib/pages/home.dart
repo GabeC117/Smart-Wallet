@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LoginPage()),
               );
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               title: Text('Home'),
               onTap: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HomePage()),
                 );
