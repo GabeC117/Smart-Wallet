@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_wallet/pages/home.dart';
-
+import 'package:smart_wallet/pages/add_expense.dart'; 
 
 class Budget extends StatefulWidget {
   @override
@@ -9,39 +8,14 @@ class Budget extends StatefulWidget {
 
 class _BudgetPage extends State<Budget> {
   final TextEditingController _budgetController = TextEditingController();
-  final TextEditingController _expenseController = TextEditingController();
   double _budget = 0.0;
   double _expenses = 0.0;
-  String _selectedCategory = 'Select a Category';
-  List<String> _categories = [
-    'Select a Category',
-    'Food',
-    'Transportation',
-    'Entertainment',
-    'Utilities',
-    'Other',
-  ];
-  String _lastAddedCategory = ''; 
+  List<Map<String, dynamic>> _expensesList = [];
 
   void _setBudget() {
     final double budget = double.tryParse(_budgetController.text) ?? 0.0;
     setState(() {
       _budget = budget;
-    });
-  }
-
-  void _addExpense() {
-    if (_selectedCategory == 'Select a Category') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a category and enter a valid expense.')),
-      );
-      return;
-    }
-    final double expense = double.tryParse(_expenseController.text) ?? 0.0;
-    setState(() {
-      _expenses += expense;
-      _expenseController.clear();
-      _lastAddedCategory = _selectedCategory; 
     });
   }
 
@@ -74,48 +48,54 @@ class _BudgetPage extends State<Budget> {
               onPressed: _setBudget,
               child: Text('Set Budget'),
             ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: DropdownButton<String>(
-                value: _selectedCategory,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategory = newValue!;
-                  });
-                },
-                items: _categories.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _expenseController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Enter an expense',
-                ),
-              ),
-            ),
             ElevatedButton(
-              onPressed: _addExpense,
-              child: Text('Add Expense'),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AddExpense(
+                      onExpenseAdded: (double amount, String category) {
+                        setState(() {
+                          _expenses += amount; 
+                          _expensesList.add({'amount': amount, 'category': category});
+                        });
+                      },
+                    ),
+                  ),
+                );
+              },
+              child: Text('Go to Add Expense'),
+            ),
+            ListView.builder(
+              shrinkWrap: true, 
+              physics: NeverScrollableScrollPhysics(), 
+              itemCount: _expensesList.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  margin: EdgeInsets.all(8.0), 
+                  elevation: 4.0, 
+                  child: ListTile(
+                    title: Text("${_expensesList[index]['category']}"),
+                    subtitle: Text("\$${_expensesList[index]['amount'].toStringAsFixed(2)}"),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        setState(() {
+                          _expenses -= _expensesList[index]['amount']; 
+                          _expensesList.removeAt(index); 
+                        });
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Total Expenses: \$$_expenses'),
+              child: Text('Total Expenses: \$${_expenses.toStringAsFixed(2)}'),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Remaining Budget: \$${_budget - _expenses}'),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Last Added Category: $_lastAddedCategory'),
+              child: Text('Remaining Budget: \$${(_budget - _expenses).toStringAsFixed(2)}'),
             ),
           ],
         ),
