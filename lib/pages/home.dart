@@ -4,14 +4,31 @@ import 'package:smart_wallet/pages/account.dart';
 import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/graph.dart';
 import 'package:smart_wallet/pages/receipt.dart';
+import 'package:smart_wallet/classes/firebase_classes.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
+Future<String?> user() async {
+  UserDatabase userDatabase = UserDatabase();
+  return await userDatabase.getUsername();
+}
+
 class _HomePageState extends State<HomePage> {
+  late Future<String?> _usernameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameFuture = user();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Budget()),
-                  );
+                );
               },
             ),
             // Add more list tiles for additional menu items if needed
@@ -91,33 +108,35 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      'Welcome to your Smart Wallet! ${FirebaseAuth.instance.currentUser?.email}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 40.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Budget()),
-                            );
-                          },
-                          child: Text('Budget'),
-                        )
-                      ]),
-                ],
+              child: FutureBuilder<String?>(
+                future: _usernameFuture,
+                builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(); // Show loading indicator while fetching username
+                  } else {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return ListView(
+                        children: <Widget>[
+                          ListTile(
+                            title: Text(
+                              'Welcome to your Smart Wallet! ${snapshot.data}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 40.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          // Add other widgets as needed
+
+                        ],
+                      );
+                    }
+                  }
+                },
               ),
             ),
             Container(
@@ -126,36 +145,43 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Budget()),
-                            );
-                            },
-                      icon: Icon(Icons.attach_money, color: Colors.white)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Budget()),
+                      );
+                    },
+                    icon: Icon(Icons.attach_money, color: Colors.white),
+                  ),
                   IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Receipts()),
-                            );
-                      },
-                      icon: Icon(Icons.camera_enhance, color: Colors.white)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Receipts()),
+                      );
+                    },
+                    icon: Icon(Icons.camera_enhance, color: Colors.white),
+                  ),
                   IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Graphs()),
-                            );
-                      },
-                      icon: Icon(Icons.trending_up, color: Colors.white)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Graphs()),
+                      );
+                    },
+                    icon: Icon(Icons.trending_up, color: Colors.white),
+                  ),
                   IconButton(
-                      onPressed: () {}, icon: Icon(Icons.help_center_outlined)),
+                    onPressed: () {},
+                    icon: Icon(Icons.help_center_outlined),
+                  ),
                   IconButton(
-                      onPressed: () {}, icon: Icon(Icons.help_center_outlined)),
+                    onPressed: () {},
+                    icon: Icon(Icons.help_center_outlined),
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
