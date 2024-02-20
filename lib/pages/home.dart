@@ -120,6 +120,7 @@ class _HomePageState extends State<HomePage> {
                       return ListView(
                         children: <Widget>[
                           ListTile(
+                            key: const Key('welcome-sw'),
                             title: Text(
                               'Welcome to your Smart Wallet! ${snapshot.data}',
                               textAlign: TextAlign.center,

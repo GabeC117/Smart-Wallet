@@ -78,17 +78,20 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
+              key: const Key('email-field'), //key for testing
               controller: _usernameController,
               decoration: const InputDecoration(labelText: 'Email'),
             ),
             const SizedBox(height: 16.0),
             TextField(
+              key: const Key('password-field'), //key for testing
               controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
+              key: const Key('login-btt'),
               onPressed: _login,
               child: const Text('Login'),
             ),
@@ -98,10 +101,12 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignUp()));
               }, 
+              key: const Key('signup-btt'),
               child: const Text('Sign Up'),
               ),
 
                ElevatedButton(
+                key: const Key('forgot-pass'),
                 onPressed: () {
                   Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ForgotPassword()));
