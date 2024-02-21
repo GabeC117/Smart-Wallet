@@ -28,7 +28,7 @@ class _SignUpState extends State<SignUp> {
 
         // Sign up successful
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up successful')));
-        // Optionally, navigate the user to another screen
+        // navigate the user to another screen
         Navigator.pop(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),

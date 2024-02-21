@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:smart_wallet/pages/add_expense.dart'; 
+import 'package:smart_wallet/pages/add_expense.dart';
+import 'package:smart_wallet/classes/firebase_classes.dart';
 
 class Budget extends StatefulWidget {
   @override
   _BudgetPage createState() => _BudgetPage();
+}
+
+Future<double?> getBudget() async {
+  UserDatabase userDatabase = UserDatabase();
+  return await userDatabase.getBudget();
+}
+
+Future<void> setBudget(double n) async {
+  UserDatabase userDatabase = UserDatabase();
+  return await userDatabase.setBudget(n);
 }
 
 class _BudgetPage extends State<Budget> {
@@ -12,11 +23,21 @@ class _BudgetPage extends State<Budget> {
   double _expenses = 0.0;
   List<Map<String, dynamic>> _expensesList = [];
 
-  void _setBudget() {
-    final double budget = double.tryParse(_budgetController.text) ?? 0.0;
-    setState(() {
-      _budget = budget;
-    });
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the budget when the widget is initialized
+    _fetchBudget();
+  }
+
+  Future<void> _fetchBudget() async {
+    double? budget = await getBudget();
+    if (budget != null) {
+      setState(() {
+        _budget = budget;
+        _budgetController.text = _budget.toString();
+      });
+    }
   }
 
   @override
@@ -45,7 +66,9 @@ class _BudgetPage extends State<Budget> {
               ),
             ),
             ElevatedButton(
-              onPressed: _setBudget,
+              onPressed: () {
+                _setBudget();
+              },
               child: Text('Set Budget'),
             ),
             ElevatedButton(
@@ -55,7 +78,7 @@ class _BudgetPage extends State<Budget> {
                     builder: (context) => AddExpense(
                       onExpenseAdded: (double amount, String category) {
                         setState(() {
-                          _expenses += amount; 
+                          _expenses += amount;
                           _expensesList.add({'amount': amount, 'category': category});
                         });
                       },
@@ -66,13 +89,13 @@ class _BudgetPage extends State<Budget> {
               child: Text('Go to Add Expense'),
             ),
             ListView.builder(
-              shrinkWrap: true, 
-              physics: NeverScrollableScrollPhysics(), 
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: _expensesList.length,
               itemBuilder: (context, index) {
                 return Card(
-                  margin: EdgeInsets.all(8.0), 
-                  elevation: 4.0, 
+                  margin: EdgeInsets.all(8.0),
+                  elevation: 4.0,
                   child: ListTile(
                     title: Text("${_expensesList[index]['category']}"),
                     subtitle: Text("\$${_expensesList[index]['amount'].toStringAsFixed(2)}"),
@@ -80,8 +103,8 @@ class _BudgetPage extends State<Budget> {
                       icon: Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
                         setState(() {
-                          _expenses -= _expensesList[index]['amount']; 
-                          _expensesList.removeAt(index); 
+                          _expenses -= _expensesList[index]['amount'];
+                          _expensesList.removeAt(index);
                         });
                       },
                     ),
@@ -101,5 +124,13 @@ class _BudgetPage extends State<Budget> {
         ),
       ),
     );
+  }
+
+  void _setBudget() {
+    final double budget = double.tryParse(_budgetController.text) ?? 0.0;
+    setState(() {
+      _budget = budget;
+      setBudget(_budget); // Update the budget in the database
+    });
   }
 }
