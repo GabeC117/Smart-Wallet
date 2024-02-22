@@ -14,7 +14,22 @@ Future<double?> getBudget() async {
 
 Future<void> setBudget(double n) async {
   UserDatabase userDatabase = UserDatabase();
-  return await userDatabase.setBudget(n);
+  await userDatabase.setBudget(n);
+}
+
+Future<double?> getExAmount() async {
+  UserDatabase userDatabase = UserDatabase();
+  return await userDatabase.getExAmount();
+}
+
+Future<List<Map<String, dynamic>>?> getExMap() async {
+  UserDatabase userDatabase = UserDatabase();
+  return await userDatabase.getExMap();
+}
+
+Future<void> deleteExpense(String expenseId) async {
+  UserDatabase userDatabase = UserDatabase();
+  await userDatabase.deleteExpense(expenseId);
 }
 
 class _BudgetPage extends State<Budget> {
@@ -28,6 +43,15 @@ class _BudgetPage extends State<Budget> {
     super.initState();
     // Fetch the budget when the widget is initialized
     _fetchBudget();
+    _fetchExAmount();
+    _fetchExMap();
+  }
+
+  void updateBudgetPage() {
+    // Fetch updated budget, expenses, etc.
+    _fetchBudget();
+    _fetchExAmount();
+    _fetchExMap();
   }
 
   Future<void> _fetchBudget() async {
@@ -40,13 +64,31 @@ class _BudgetPage extends State<Budget> {
     }
   }
 
+  Future<void> _fetchExAmount() async {
+    double? amount = await getExAmount();
+    if (amount != null) {
+      setState(() {
+        _expenses = amount;
+      });
+    }
+  }
+
+  Future<void> _fetchExMap() async {
+    List<Map<String, dynamic>>? map = await getExMap();
+    if (map != null) {
+      setState(() {
+        _expensesList = map;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Budget Tracker'),
+        title: const Text('Budget Tracker'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -56,11 +98,11 @@ class _BudgetPage extends State<Budget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: _budgetController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Enter your budget',
                 ),
               ),
@@ -76,36 +118,46 @@ class _BudgetPage extends State<Budget> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => AddExpense(
-                      onExpenseAdded: (double amount, String category) {
+                      onUpdateBudgetPage: () {
+                        // Call the update function when the AddExpense page is popped
                         setState(() {
-                          _expenses += amount;
-                          _expensesList.add({'amount': amount, 'category': category});
+                          // Update the budget page
+                          _fetchBudget();
+                          _fetchExAmount();
+                          _fetchExMap();
                         });
                       },
                     ),
                   ),
                 );
               },
-              child: Text('Go to Add Expense'),
+              child: const Text('Go to Add Expense'),
             ),
             ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: _expensesList.length,
               itemBuilder: (context, index) {
                 return Card(
-                  margin: EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.all(8.0),
                   elevation: 4.0,
                   child: ListTile(
                     title: Text("${_expensesList[index]['category']}"),
                     subtitle: Text("\$${_expensesList[index]['amount'].toStringAsFixed(2)}"),
                     trailing: IconButton(
                       icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        setState(() {
-                          _expenses -= _expensesList[index]['amount'];
-                          _expensesList.removeAt(index);
-                        });
+                      onPressed: () async {
+                        String customId = _expensesList[index]['id']; // Retrieve the custom ID
+                        try {
+                          await deleteExpense(customId); // Delete the expense using the custom ID
+                          setState(() {
+                            _expenses -= _expensesList[index]['amount'];
+                            _expensesList.removeAt(index);
+                          });
+                        } catch (e) {
+                          // Handle error if deletion fails
+                          print('Error deleting expense: $e');
+                        }
                       },
                     ),
                   ),
@@ -113,11 +165,11 @@ class _BudgetPage extends State<Budget> {
               },
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text('Total Expenses: \$${_expenses.toStringAsFixed(2)}'),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text('Remaining Budget: \$${(_budget - _expenses).toStringAsFixed(2)}'),
             ),
           ],
