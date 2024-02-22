@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:smart_wallet/classes/firebase_classes.dart';
+import 'dart:math';
+
 
 class AddExpense extends StatefulWidget {
-  final Function(double, String) onExpenseAdded;
+  final VoidCallback? onUpdateBudgetPage; // Callback function
 
-  AddExpense({required this.onExpenseAdded});
+  AddExpense({this.onUpdateBudgetPage});
 
   @override
   _AddExpense createState() => _AddExpense();
 }
 
+Future<void> setEx(double a, String c) async {
+  UserDatabase userDatabase = UserDatabase();
+  await userDatabase.setEx(a, c);
+}
+
 class _AddExpense extends State<AddExpense> {
   final TextEditingController _expenseController = TextEditingController();
   String _selectedCategory = 'Select a Category';
-  List<String> _categories = [
+  final List<String> _categories = [
     'Select a Category',
     'Food',
     'Transportation',
@@ -21,31 +29,18 @@ class _AddExpense extends State<AddExpense> {
     'Other',
   ];
 
-  void _addExpense() {
-    if (_selectedCategory == 'Select a Category') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a category and enter a valid expense.')),
-      );
-      return;
-    }
-    final double expense = double.tryParse(_expenseController.text) ?? 0.0;
-    widget.onExpenseAdded(expense, _selectedCategory); 
-
-    
-    setState(() {
-      _expenseController.clear();
-      _selectedCategory = 'Select a Category'; 
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Expense'),
+        title: const Text('Add Expense'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Call the callback function when pressing the back button
+            widget.onUpdateBudgetPage?.call();
+            Navigator.pop(context);
+          },
         ),
       ),
       body: SingleChildScrollView(
@@ -54,7 +49,7 @@ class _AddExpense extends State<AddExpense> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: DropdownButton<String>(
                 isExpanded: true,
                 value: _selectedCategory,
@@ -72,18 +67,21 @@ class _AddExpense extends State<AddExpense> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: _expenseController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Enter an expense',
                 ),
               ),
             ),
             ElevatedButton(
-              onPressed: _addExpense,
-              child: Text('Add Expense'),
+              onPressed: () {
+                final double expense = double.tryParse(_expenseController.text) ?? 0.0;
+                setEx(expense, _selectedCategory);
+              },
+              child: const Text('Add Expense'),
             ),
           ],
         ),
