@@ -6,7 +6,7 @@ class UserDatabase {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Generate a random alphanumeric string for custom ID
-  String generateRandomId() {
+  String _generateRandomId() {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     final idLength = 10;
@@ -77,23 +77,62 @@ class UserDatabase {
     }
   }
 
-Future<void> setEx(double amount, String category) async {
-  try {
-    // Get reference to Firestore collection
-    CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
-    String customId = generateRandomId();
+  Future<List<Map<String, dynamic>>?> getRecentExpenses() async {
+    try {
+      // Get reference to Firestore collection
+      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
 
-    // Add a new document to the expenses collection with custom ID
-    await expenses.doc(customId).set({
-      'amount': amount,
-      'category': category,
-      'createdAt': FieldValue.serverTimestamp(), // Timestamp indicating creation time
-    });
-  } catch (e) {
-    // Handle errors here
-    print('Error: $e');
+      // Get documents snapshot
+      QuerySnapshot querySnapshot = await expenses.orderBy('createdAt', descending: true).limit(3).get(); // Limit to 3 most recent expenses
+
+      // Initialize a list to store maps of amount, category, and id
+      List<Map<String, dynamic>> exList = [];
+
+      // Iterate over each document to extract amount, category, and id
+      querySnapshot.docs.forEach((doc) {
+        // Get the amount, category, and id from the document data
+        double amount = doc.get('amount') ?? 0.0;
+        String category = doc.get('category') ?? '';
+        String id = doc.id; // Get the document ID
+
+        // Create a map containing amount, category, and id
+        Map<String, dynamic> exMap = {
+          'id': id,
+          'amount': amount,
+          'category': category,
+        };
+
+        // Add the map to the list
+        exList.add(exMap);
+      });
+
+      // Return the list of maps
+      return exList;
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+      return null;
+    }
   }
-}
+
+
+  Future<void> setEx(double amount, String category) async {
+    try {
+      // Get reference to Firestore collection
+      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
+      String customId = _generateRandomId();
+
+      // Add a new document to the expenses collection with custom ID
+      await expenses.doc(customId).set({
+        'amount': amount,
+        'category': category,
+        'createdAt': FieldValue.serverTimestamp(), // Timestamp indicating creation time
+      });
+    } catch (e) {
+      // Handle errors here
+      print('Error: $e');
+    }
+  }
 
 
   Future<double?> getExAmount() async{

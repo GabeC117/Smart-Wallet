@@ -15,18 +15,23 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-Future<String?> user() async {
-  UserDatabase userDatabase = UserDatabase();
-  return await userDatabase.getUsername();
-}
-
 class _HomePageState extends State<HomePage> {
   late Future<String?> _usernameFuture;
+  late Future<double?> _budgetFuture;
+  late Future<List<Map<String, dynamic>>?> _recentExpensesFuture;
 
   @override
   void initState() {
     super.initState();
-    _usernameFuture = user();
+    _usernameFuture = UserDatabase().getUsername();
+    _fetchData(); // Fetch initial data
+  }
+
+  void _fetchData() {
+    setState(() {
+      _budgetFuture = UserDatabase().getBudget();
+      _recentExpensesFuture = UserDatabase().getRecentExpenses();
+    });
   }
 
   @override
@@ -37,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.menu,
                 color: Colors.white,
               ),
@@ -47,7 +52,7 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-        title: Text('Smart Wallet'),
+        title: const Text('Smart Wallet'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -56,8 +61,8 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (context) => LoginPage()),
               );
             },
-            child: Text(
-              'Test:Back to Sign in',
+            child: const Text(
+              'Test: Back to Sign in',
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -73,7 +78,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 color: Colors.purple.shade300,
               ),
-              child: Text(
+              child: const Text(
                 'Menu',
                 style: TextStyle(
                   color: Colors.white,
@@ -82,21 +87,18 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              title: Text('Home'),
+              title: const Text('Home'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
+                Navigator.pop(context); // Close drawer
               },
             ),
             ListTile(
-              title: Text('Budget'),
+              title: const Text('Budget'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Budget()),
-                );
+                ).then((value) => _fetchData());
               },
             ),
             // Add more list tiles for additional menu items if needed
@@ -112,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                 future: _usernameFuture,
                 builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator(); // Show loading indicator while fetching username
+                    return const CircularProgressIndicator(); // Show loading indicator while fetching username
                   } else {
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
@@ -124,15 +126,92 @@ class _HomePageState extends State<HomePage> {
                             title: Text(
                               'Welcome to your Smart Wallet! ${snapshot.data}',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 40.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
                           ),
-                          // Add other widgets as needed
-
+                          FutureBuilder<double?>(
+                            future: _budgetFuture,
+                            builder: (BuildContext context, AsyncSnapshot<double?> budgetSnapshot) {
+                              if (budgetSnapshot.connectionState == ConnectionState.waiting) {
+                                return const CircularProgressIndicator(); // Show loading indicator while fetching budget
+                              } else {
+                                if (budgetSnapshot.hasError) {
+                                  return const Text('Error fetching budget');
+                                } else {
+                                  if (budgetSnapshot.data == null) {
+                                    return const Text('Budget not set'); // Display message when budget document does not exist
+                                  } else {
+                                    return ListTile(
+                                      title: Text(
+                                        'Current Budget: \$${budgetSnapshot.data}',
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 20.0,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                          ),
+                          FutureBuilder<List<Map<String, dynamic>>?>(
+                            future: _recentExpensesFuture,
+                            builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>?> expensesSnapshot) {
+                              if (expensesSnapshot.connectionState == ConnectionState.waiting) {
+                                return const CircularProgressIndicator(); // Show loading indicator while fetching recent expenses
+                              } else {
+                                if (expensesSnapshot.hasError) {
+                                  return const Text('Error fetching recent expenses');
+                                } else {
+                                  if (expensesSnapshot.data != null && expensesSnapshot.data!.isNotEmpty) {
+                                    return Column(
+                                      children: [
+                                        const Text(
+                                          'Recent Expenses:',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 20.0,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: expensesSnapshot.data!.length,
+                                          itemBuilder: (BuildContext context, int index) {
+                                            return ListTile(
+                                              title: Text(
+                                                'Amount: \$${expensesSnapshot.data![index]['amount']}, Category: ${expensesSnapshot.data![index]['category']}',
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  } else {
+                                    return const Text(
+                                      'No recent expenses available',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        color: Colors.white,
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                          ),
                         ],
                       );
                     }
@@ -150,9 +229,9 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Budget()),
-                      );
+                      ).then((value) => _fetchData());
                     },
-                    icon: Icon(Icons.attach_money, color: Colors.white),
+                    icon: const Icon(Icons.attach_money, color: Colors.white),
                   ),
                   IconButton(
                     onPressed: () {
@@ -161,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                         MaterialPageRoute(builder: (context) => Receipts()),
                       );
                     },
-                    icon: Icon(Icons.camera_enhance, color: Colors.white),
+                    icon: const Icon(Icons.camera_enhance, color: Colors.white),
                   ),
                   IconButton(
                     onPressed: () {
@@ -170,15 +249,15 @@ class _HomePageState extends State<HomePage> {
                         MaterialPageRoute(builder: (context) => Graphs()),
                       );
                     },
-                    icon: Icon(Icons.trending_up, color: Colors.white),
+                    icon: const Icon(Icons.trending_up, color: Colors.white),
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.help_center_outlined),
+                    icon: const Icon(Icons.help_center_outlined),
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.help_center_outlined),
+                    icon: const Icon(Icons.help_center_outlined),
                   ),
                 ],
               ),
