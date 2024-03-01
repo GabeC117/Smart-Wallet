@@ -12,13 +12,12 @@ import 'package:universal_io/io.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(MyApp());
 }
-
-
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -39,32 +38,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-
   Future<void> _login() async {
-      try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _usernameController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-        // Sign up successful
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign in successful')));
-        // Optionally, navigate the user to another screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
-      } on FirebaseAuthException catch (e) {
-        // Handle errors
-        var message = 'An error occurred. Please try again later.';
-        if (e.code == 'user-not-found') {
-          message = 'No user found for that email.';
-        } else if (e.code == 'wrong-password') {
-          message= 'Wrong password provided for that user.';
-        }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _usernameController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // Sign up successful
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Sign in successful')));
+      // Optionally, navigate the user to another screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      // Handle errors
+      var message = 'An error occurred. Please try again later.';
+      if (e.code == 'user-not-found') {
+        message = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        message = 'Wrong password provided for that user.';
       }
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -95,24 +94,22 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: _login,
               child: const Text('Login'),
             ),
-
             ElevatedButton(
               onPressed: () {
-                Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SignUp()));
-              }, 
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => SignUp()));
+              },
               key: const Key('signup-btt'),
               child: const Text('Sign Up'),
-              ),
-
-               ElevatedButton(
-                key: const Key('forgot-pass'),
-                onPressed: () {
-                  Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ForgotPassword()));
-                }, 
-                child: const Text('Forgot Password'),
-              ),
+            ),
+            ElevatedButton(
+              key: const Key('forgot-pass'),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ForgotPassword()));
+              },
+              child: const Text('Forgot Password'),
+            ),
           ],
         ),
       ),

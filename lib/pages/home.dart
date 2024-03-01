@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_wallet/components/drawer.dart';
 import 'package:smart_wallet/main.dart';
 import 'package:smart_wallet/pages/account.dart';
 import 'package:smart_wallet/pages/budget.dart';
@@ -8,7 +9,6 @@ import 'package:smart_wallet/classes/firebase_classes.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 
 class HomePage extends StatefulWidget {
   @override
@@ -37,8 +37,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.purple.shade300,
       appBar: AppBar(
-        backgroundColor: Colors.purple.shade300,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
@@ -47,11 +47,16 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Scaffold.of(context).openDrawer(); // Open drawer on button press
+                Scaffold.of(context)
+                    .openDrawer(); // Open drawer on button press
               },
             );
           },
         ),
+
+        title: Text('Smart Wallet'),
+        actions: <Widget>[],
+
         title: const Text('Smart Wallet'),
         actions: <Widget>[
           TextButton(
@@ -104,7 +109,9 @@ class _HomePageState extends State<HomePage> {
             // Add more list tiles for additional menu items if needed
           ],
         ),
+
       ),
+      //drawer: MyDrawer(),
       body: Container(
         color: Colors.purple.shade100,
         child: Column(
@@ -112,7 +119,8 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: FutureBuilder<String?>(
                 future: _usernameFuture,
-                builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator(); // Show loading indicator while fetching username
                   } else {
@@ -133,6 +141,9 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
+
+                          // Add other widgets as needed
+
                           FutureBuilder<double?>(
                             future: _budgetFuture,
                             builder: (BuildContext context, AsyncSnapshot<double?> budgetSnapshot) {
@@ -212,6 +223,7 @@ class _HomePageState extends State<HomePage> {
                               }
                             },
                           ),
+
                         ],
                       );
                     }
