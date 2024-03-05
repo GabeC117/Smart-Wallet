@@ -54,9 +54,6 @@ class _HomePageState extends State<HomePage> {
           },
         ),
 
-        title: Text('Smart Wallet'),
-        actions: <Widget>[],
-
         title: const Text('Smart Wallet'),
         actions: <Widget>[
           TextButton(
