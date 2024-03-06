@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:math';
 
 class UserDatabase {
@@ -214,6 +216,21 @@ class UserDatabase {
       // Handle errors here
       print('Error deleting expense: $e');
       throw e; // Rethrow the error to handle it in the calling code
+    }
+  }
+
+}
+
+class UserStorage {
+  final storage = FirebaseStorage.instance;
+
+  Future<void> uploadFile(File file) async {
+    try {
+      Reference storageReference = FirebaseStorage.instance.ref().child('images/${FirebaseAuth.instance.currentUser?.uid}/${DateTime.now().toString()}');
+      UploadTask uploadTask = storageReference.putFile(file);
+      await uploadTask.whenComplete(() => print('File Uploaded'));
+    } catch (e) {
+      print(e);
     }
   }
 
