@@ -1,34 +1,41 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
 
-class Receipts extends StatelessWidget{
+class PicturePage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              title: const Text('Uploaded Receipts'),
-              centerTitle: true,
-            ),
-      );
-  }
+  _PicturePageState createState() => _PicturePageState();
 }
 
+class _PicturePageState extends State<PicturePage> {
+  late File? _imageFile = null;
+  final _picker = ImagePicker();
+  
+  
+  Future<void> _takePicture() async {
+    final imageFile = await _picker.pickImage(source: ImageSource.camera);
+    setState(() {
+      _imageFile = File(imageFile!.path);
+    });
+  }
 
-/*
-use following code on a button to get to this page.
-
-
-onPressed: () {
-  Navigator.push(context,
-  MaterialPageRoute(builder: (context) => Receipts()));
-}, 
-
-*/
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Take a Picture'),
+      ),
+      body: Center(
+        child: _imageFile == null
+            ? Text('No image selected.')
+            : Image.file(_imageFile!),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _takePicture,
+        tooltip: 'Take Picture',
+        child: Icon(Icons.camera_alt),
+      ),
+    );
+  }
+}
