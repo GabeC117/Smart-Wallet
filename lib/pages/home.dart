@@ -54,9 +54,6 @@ class _HomePageState extends State<HomePage> {
           },
         ),
 
-        title: Text('Smart Wallet'),
-        actions: <Widget>[],
-
         title: const Text('Smart Wallet'),
         actions: <Widget>[
           TextButton(
@@ -249,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Receipts()),
+                        MaterialPageRoute(builder: (context) => PicturePage()),
                       );
                     },
                     icon: const Icon(Icons.camera_enhance, color: Colors.white),

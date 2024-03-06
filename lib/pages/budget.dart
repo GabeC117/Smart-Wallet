@@ -146,10 +146,10 @@ class _BudgetPage extends State<Budget> {
                     subtitle: Text("\$${_expensesList[index]['amount'].toStringAsFixed(2)}"),
                     trailing: IconButton(
                       icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
+                      onPressed: ()  {
                         String customId = _expensesList[index]['id']; // Retrieve the custom ID
                         try {
-                          await deleteExpense(customId); // Delete the expense using the custom ID
+                          deleteExpense(customId); // Delete the expense using the custom ID
                           setState(() {
                             _expenses -= _expensesList[index]['amount'];
                             _expensesList.removeAt(index);

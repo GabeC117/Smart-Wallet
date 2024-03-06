@@ -45,23 +45,10 @@ class Account extends StatelessWidget {
           ),
           // Username
           MyTextBox(
-            text: currentUser?.displayName ?? 'No username available',
+            text: currentUser.displayName ?? 'No username available',
             sectionName: 'Username',
             onPressed: () => editField('username'),
           ),
         ]));
   }
 }
-
-
-
-/*
-use following code on a button to get to this page.
-
-
-onPressed: () {
-  Navigator.push(context,
-  MaterialPageRoute(builder: (context) => Account()));
-}, 
-
-*/
