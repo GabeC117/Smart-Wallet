@@ -53,7 +53,6 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-
         title: const Text('Smart Wallet'),
         actions: <Widget>[
           TextButton(
@@ -72,43 +71,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.purple.shade300,
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context); // Close drawer
-              },
-            ),
-            ListTile(
-              title: const Text('Budget'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Budget()),
-                ).then((value) => _fetchData());
-              },
-            ),
-            // Add more list tiles for additional menu items if needed
-          ],
-        ),
-
-      ),
-      //drawer: MyDrawer(),
+      drawer: MyDrawer(),
       body: Container(
         color: Colors.purple.shade100,
         child: Column(
@@ -143,15 +106,18 @@ class _HomePageState extends State<HomePage> {
 
                           FutureBuilder<double?>(
                             future: _budgetFuture,
-                            builder: (BuildContext context, AsyncSnapshot<double?> budgetSnapshot) {
-                              if (budgetSnapshot.connectionState == ConnectionState.waiting) {
+                            builder: (BuildContext context,
+                                AsyncSnapshot<double?> budgetSnapshot) {
+                              if (budgetSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 return const CircularProgressIndicator(); // Show loading indicator while fetching budget
                               } else {
                                 if (budgetSnapshot.hasError) {
                                   return const Text('Error fetching budget');
                                 } else {
                                   if (budgetSnapshot.data == null) {
-                                    return const Text('Budget not set'); // Display message when budget document does not exist
+                                    return const Text(
+                                        'Budget not set'); // Display message when budget document does not exist
                                   } else {
                                     return ListTile(
                                       title: Text(
@@ -170,14 +136,19 @@ class _HomePageState extends State<HomePage> {
                           ),
                           FutureBuilder<List<Map<String, dynamic>>?>(
                             future: _recentExpensesFuture,
-                            builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>?> expensesSnapshot) {
-                              if (expensesSnapshot.connectionState == ConnectionState.waiting) {
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<Map<String, dynamic>>?>
+                                    expensesSnapshot) {
+                              if (expensesSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 return const CircularProgressIndicator(); // Show loading indicator while fetching recent expenses
                               } else {
                                 if (expensesSnapshot.hasError) {
-                                  return const Text('Error fetching recent expenses');
+                                  return const Text(
+                                      'Error fetching recent expenses');
                                 } else {
-                                  if (expensesSnapshot.data != null && expensesSnapshot.data!.isNotEmpty) {
+                                  if (expensesSnapshot.data != null &&
+                                      expensesSnapshot.data!.isNotEmpty) {
                                     return Column(
                                       children: [
                                         const Text(
@@ -190,8 +161,10 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         ListView.builder(
                                           shrinkWrap: true,
-                                          itemCount: expensesSnapshot.data!.length,
-                                          itemBuilder: (BuildContext context, int index) {
+                                          itemCount:
+                                              expensesSnapshot.data!.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
                                             return ListTile(
                                               title: Text(
                                                 'Amount: \$${expensesSnapshot.data![index]['amount']}, Category: ${expensesSnapshot.data![index]['category']}',
@@ -220,7 +193,6 @@ class _HomePageState extends State<HomePage> {
                               }
                             },
                           ),
-
                         ],
                       );
                     }
