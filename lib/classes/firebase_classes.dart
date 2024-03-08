@@ -10,15 +10,18 @@ class UserDatabase {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     final idLength = 10;
-    return List.generate(idLength, (index) => chars[random.nextInt(chars.length)]).join();
+    return List.generate(
+        idLength, (index) => chars[random.nextInt(chars.length)]).join();
   }
-
 
   Future<String?> getUsername() async {
     try {
       // Get the document snapshot for the user
-      DocumentSnapshot userSnapshot = await _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).get();
-      
+      DocumentSnapshot userSnapshot = await _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .get();
+
       // Check if the document exists
       if (userSnapshot.exists) {
         // Retrieve the username from the document data
@@ -28,24 +31,79 @@ class UserDatabase {
         return null;
       }
     } catch (e) {
-      // Handle any errors that occur during the retrieval process
       print('Error retrieving username: $e');
       return null;
     }
   }
 
+  Future<String?> getEmail() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      try {
+        final snapshot =
+            await _firestore.collection('users').doc(currentUser.uid).get();
+        return snapshot.get('email') as String?;
+      } catch (e) {
+        print('Error getting email: $e');
+      }
+    }
+    return null;
+  }
 
+  Future<void> updateUsername(String newUsername) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await _firestore.collection('users').doc(user.uid).update({
+          'username': newUsername,
+        });
+      } catch (e) {
+        print('Error updating username: $e');
+        throw e;
+      }
+    }
+  }
 
+  Future<void> updateEmail(String newEmail) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      try {
+        await currentUser.updateEmail(newEmail);
+        await _firestore
+            .collection('users')
+            .doc(currentUser.uid)
+            .update({'email': newEmail});
+      } catch (e) {
+        print('Error updating email: $e');
+      }
+    }
+  }
+
+  Future<void> updateProfilePicture(String imageUrl) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      await _firestore.collection('users').doc(userId).update({
+        'profilePicture': imageUrl,
+      });
+    } catch (e) {
+      print('Error updating profile picture: $e');
+      throw e;
+    }
+  }
 
 //grabbing budget info
   Future<double?> getBudget() async {
     try {
-      DocumentSnapshot userSnapshot = await _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('budgets').doc('budget_num').get();
+      DocumentSnapshot userSnapshot = await _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('budgets')
+          .doc('budget_num')
+          .get();
 
       if (userSnapshot.exists) {
         return userSnapshot.get('num');
-      }
-      else{
+      } else {
         return null;
       }
     } catch (e) {
@@ -55,23 +113,36 @@ class UserDatabase {
     }
   }
 
-  Future<void> setBudget (double n) async {
+  Future<void> setBudget(double n) async {
     try {
-      DocumentSnapshot userSnapshot = await _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('budgets').doc('budget_num').get();
+      DocumentSnapshot userSnapshot = await _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('budgets')
+          .doc('budget_num')
+          .get();
 
-      if (userSnapshot.exists){
-        await _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('budgets').doc('budget_num').update({
+      if (userSnapshot.exists) {
+        await _firestore
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .collection('budgets')
+            .doc('budget_num')
+            .update({
           'num': n,
         });
-      }else{
-        await _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('budgets').doc('budget_num').set({
+      } else {
+        await _firestore
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .collection('budgets')
+            .doc('budget_num')
+            .set({
           'num': n,
         });
       }
       return;
-
     } catch (e) {
-
       print('Error setting budget: $e');
       return;
     }
@@ -80,10 +151,16 @@ class UserDatabase {
   Future<List<Map<String, dynamic>>?> getRecentExpenses() async {
     try {
       // Get reference to Firestore collection
-      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
+      CollectionReference expenses = _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('expenses');
 
       // Get documents snapshot
-      QuerySnapshot querySnapshot = await expenses.orderBy('createdAt', descending: true).limit(3).get(); // Limit to 3 most recent expenses
+      QuerySnapshot querySnapshot = await expenses
+          .orderBy('createdAt', descending: true)
+          .limit(3)
+          .get(); // Limit to 3 most recent expenses
 
       // Initialize a list to store maps of amount, category, and id
       List<Map<String, dynamic>> exList = [];
@@ -115,18 +192,21 @@ class UserDatabase {
     }
   }
 
-
   Future<void> setEx(double amount, String category) async {
     try {
       // Get reference to Firestore collection
-      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
+      CollectionReference expenses = _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('expenses');
       String customId = _generateRandomId();
 
       // Add a new document to the expenses collection with custom ID
       await expenses.doc(customId).set({
         'amount': amount,
         'category': category,
-        'createdAt': FieldValue.serverTimestamp(), // Timestamp indicating creation time
+        'createdAt':
+            FieldValue.serverTimestamp(), // Timestamp indicating creation time
       });
     } catch (e) {
       // Handle errors here
@@ -134,15 +214,18 @@ class UserDatabase {
     }
   }
 
-
-  Future<double?> getExAmount() async{
+  Future<double?> getExAmount() async {
     //grab all amounts from all docs and return the addition of them all
     try {
       // Get reference to Firestore collection
-      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
+      CollectionReference expenses = _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('expenses');
 
       // Get documents snapshot
-      QuerySnapshot querySnapshot = await expenses.orderBy('createdAt', descending: true).get();
+      QuerySnapshot querySnapshot =
+          await expenses.orderBy('createdAt', descending: true).get();
 
       // Initialize total amount variable
       double totalAmount = 0.0;
@@ -167,10 +250,14 @@ class UserDatabase {
   Future<List<Map<String, dynamic>>?> getExMap() async {
     try {
       // Get reference to Firestore collection
-      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
+      CollectionReference expenses = _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('expenses');
 
       // Get documents snapshot
-      QuerySnapshot querySnapshot = await expenses.orderBy('createdAt', descending: true).get();
+      QuerySnapshot querySnapshot =
+          await expenses.orderBy('createdAt', descending: true).get();
 
       // Initialize a list to store maps of amount, category, and id
       List<Map<String, dynamic>> exList = [];
@@ -202,12 +289,14 @@ class UserDatabase {
     }
   }
 
-  
   Future<void> deleteExpense(String expenseId) async {
     try {
       // Get reference to the expense document
-      CollectionReference expenses = _firestore.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).collection('expenses');
-      
+      CollectionReference expenses = _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('expenses');
+
       // Delete the expense document using the provided expenseId
       await expenses.doc(expenseId).delete();
     } catch (e) {
@@ -216,5 +305,4 @@ class UserDatabase {
       throw e; // Rethrow the error to handle it in the calling code
     }
   }
-
 }

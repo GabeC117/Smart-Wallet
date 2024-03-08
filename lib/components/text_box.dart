@@ -31,10 +31,15 @@ class MyTextBox extends StatelessWidget {
                 ),
 
                 // Button
-                IconButton(
+                Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  child: IconButton(
                     onPressed: onPressed,
                     icon: Icon(Icons.edit),
-                    color: Colors.blue.shade900),
+                    color: Colors.blue.shade900,
+                  ),
+                ),
               ],
             ),
 
