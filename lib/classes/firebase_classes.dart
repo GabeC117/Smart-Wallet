@@ -307,8 +307,6 @@ class UserDatabase {
       throw e; // Rethrow the error to handle it in the calling code
     }
   }
-}<<<<<<< sw-storage
-
 }
 
 class UserStorage {
