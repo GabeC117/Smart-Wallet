@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:smart_wallet/components/drawer.dart';
 import 'package:smart_wallet/main.dart';
@@ -43,7 +45,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: MyDrawer(),
       body: Container(
-        color: Colors.purple.shade100,
+        color: Color.fromARGB(255, 255, 255, 255),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -73,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                               style: const TextStyle(
                                 fontSize: 40.0,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Color.fromARGB(255, 13, 71, 161),
                               ),
                             ),
                           ),
@@ -101,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           fontSize: 20.0,
-                                          color: Colors.white,
+                                          color: Color.fromARGB(255, 13, 71, 161),
                                         ),
                                       ),
                                     );
@@ -132,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: 20.0,
-                                            color: Colors.white,
+                                            color: Color.fromARGB(255, 13, 71, 161),
                                           ),
                                         ),
                                         ListView.builder(
@@ -147,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                                                 textAlign: TextAlign.center,
                                                 style: const TextStyle(
                                                   fontSize: 16.0,
-                                                  color: Colors.white,
+                                                  color: Color.fromARGB(255, 13, 71, 161),
                                                 ),
                                               ),
                                             );
@@ -161,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 20.0,
-                                        color: Colors.white,
+                                        color: Color.fromARGB(255, 13, 71, 161),
                                       ),
                                     );
                                   }
@@ -177,7 +179,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Container(
-              color: Colors.purple.shade300,
+              color: Colors.blue.shade900,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -207,14 +209,6 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                     icon: const Icon(Icons.trending_up, color: Colors.white),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.help_center_outlined),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.help_center_outlined),
                   ),
                 ],
               ),
