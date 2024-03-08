@@ -6,6 +6,7 @@ import 'package:smart_wallet/pages/forgot_password.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'package:camera/camera.dart';
 
@@ -20,6 +21,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseAppCheck.instance.activate();
   runApp(MyApp());
 }
 
