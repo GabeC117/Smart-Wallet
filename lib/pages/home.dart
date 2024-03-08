@@ -37,39 +37,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.purple.shade300,
       appBar: AppBar(
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(
-                Icons.menu,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Scaffold.of(context)
-                    .openDrawer(); // Open drawer on button press
-              },
-            );
-          },
-        ),
+        backgroundColor: Colors.blue.shade900,
         title: const Text('Smart Wallet'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-            child: const Text(
-              'Test: Back to Sign in',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
       ),
       drawer: MyDrawer(),
       body: Container(
@@ -82,7 +52,13 @@ class _HomePageState extends State<HomePage> {
                 builder:
                     (BuildContext context, AsyncSnapshot<String?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator(); // Show loading indicator while fetching username
+                    return Center(
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
                   } else {
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
