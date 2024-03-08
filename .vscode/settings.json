@@ -1,3 +1,6 @@
 {
-    "dart.flutterSdkPath": "C:\\src\\flutter master\\flutter"
+    "dart.flutterSdkPath": "C:\\src\\flutter master\\flutter",
+    "files.watcherExclude": {
+        "**/target": true
+    }
 }
