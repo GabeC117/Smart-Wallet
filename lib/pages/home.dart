@@ -1,5 +1,3 @@
-// ignore_for_file: unused_import
-
 import 'package:flutter/material.dart';
 import 'package:smart_wallet/components/drawer.dart';
 import 'package:smart_wallet/main.dart';
@@ -21,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   late Future<String?> _usernameFuture;
   late Future<double?> _budgetFuture;
   late Future<List<Map<String, dynamic>>?> _recentExpensesFuture;
+  double _remainingBudget = 0.0;
 
   @override
   void initState() {
@@ -33,6 +32,16 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _budgetFuture = UserDatabase().getBudget();
       _recentExpensesFuture = UserDatabase().getRecentExpenses();
+    });
+
+    // Calculate remaining budget once futures are resolved
+    Future.wait([_budgetFuture, _recentExpensesFuture]).then((values) {
+      double budget = values[0] as double? ?? 0.0;
+      double expenses = (values[1] as List<Map<String, dynamic>>?)?.fold<double>(0.0, (sum, expense) => sum + (expense['amount'] as double? ?? 0.0)) ?? 0.0;
+
+      setState(() {
+        _remainingBudget = budget - expenses;
+      });
     });
   }
 
@@ -75,13 +84,10 @@ class _HomePageState extends State<HomePage> {
                               style: const TextStyle(
                                 fontSize: 40.0,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 13, 71, 161),
+                                color: Color.fromARGB(255, 0, 0, 0),
                               ),
                             ),
                           ),
-
-                          // Add other widgets as needed
-
                           FutureBuilder<double?>(
                             future: _budgetFuture,
                             builder: (BuildContext context,
@@ -97,15 +103,31 @@ class _HomePageState extends State<HomePage> {
                                     return const Text(
                                         'Budget not set'); // Display message when budget document does not exist
                                   } else {
-                                    return ListTile(
-                                      title: Text(
-                                        'Current Budget: \$${budgetSnapshot.data}',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 20.0,
-                                          color: Color.fromARGB(255, 13, 71, 161),
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          title: Text(
+                                            'Current Budget: \$${budgetSnapshot.data}',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        ListTile(
+                                          title: Text(
+                                            'Remaining Budget: \$$_remainingBudget',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     );
                                   }
                                 }
@@ -134,7 +156,8 @@ class _HomePageState extends State<HomePage> {
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: 20.0,
-                                            color: Color.fromARGB(255, 13, 71, 161),
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
                                           ),
                                         ),
                                         ListView.builder(
@@ -148,8 +171,9 @@ class _HomePageState extends State<HomePage> {
                                                 'Amount: \$${expensesSnapshot.data![index]['amount']}, Category: ${expensesSnapshot.data![index]['category']}',
                                                 textAlign: TextAlign.center,
                                                 style: const TextStyle(
-                                                  fontSize: 16.0,
-                                                  color: Color.fromARGB(255, 13, 71, 161),
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color.fromARGB(255, 0, 0, 0),
                                                 ),
                                               ),
                                             );
@@ -163,7 +187,8 @@ class _HomePageState extends State<HomePage> {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 20.0,
-                                        color: Color.fromARGB(255, 13, 71, 161),
+                                        fontWeight: FontWeight.bold,
+                                        color: Color.fromARGB(255, 0, 0, 0),
                                       ),
                                     );
                                   }
