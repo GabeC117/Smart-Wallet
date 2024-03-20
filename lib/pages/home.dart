@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   late Future<String?> _usernameFuture;
   late Future<double?> _budgetFuture;
   late Future<List<Map<String, dynamic>>?> _recentExpensesFuture;
+  double _remainingBudget = 0.0;
 
   @override
   void initState() {
@@ -32,6 +33,16 @@ class _HomePageState extends State<HomePage> {
       _budgetFuture = UserDatabase().getBudget();
       _recentExpensesFuture = UserDatabase().getRecentExpenses();
     });
+
+    // Calculate remaining budget once futures are resolved
+    Future.wait([_budgetFuture, _recentExpensesFuture]).then((values) {
+      double budget = values[0] as double? ?? 0.0;
+      double expenses = (values[1] as List<Map<String, dynamic>>?)?.fold<double>(0.0, (sum, expense) => sum + (expense['amount'] as double? ?? 0.0)) ?? 0.0;
+
+      setState(() {
+        _remainingBudget = budget - expenses;
+      });
+    });
   }
 
   @override
@@ -43,7 +54,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: MyDrawer(),
       body: Container(
-        color: Colors.purple.shade100,
+        color: Color.fromARGB(255, 255, 255, 255),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -73,13 +84,10 @@ class _HomePageState extends State<HomePage> {
                               style: const TextStyle(
                                 fontSize: 40.0,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: Color.fromARGB(255, 0, 0, 0),
                               ),
                             ),
                           ),
-
-                          // Add other widgets as needed
-
                           FutureBuilder<double?>(
                             future: _budgetFuture,
                             builder: (BuildContext context,
@@ -95,15 +103,31 @@ class _HomePageState extends State<HomePage> {
                                     return const Text(
                                         'Budget not set'); // Display message when budget document does not exist
                                   } else {
-                                    return ListTile(
-                                      title: Text(
-                                        'Current Budget: \$${budgetSnapshot.data}',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 20.0,
-                                          color: Colors.white,
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          title: Text(
+                                            'Current Budget: \$${budgetSnapshot.data}',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        ListTile(
+                                          title: Text(
+                                            'Remaining Budget: \$$_remainingBudget',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     );
                                   }
                                 }
@@ -132,7 +156,8 @@ class _HomePageState extends State<HomePage> {
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             fontSize: 20.0,
-                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(255, 0, 0, 0),
                                           ),
                                         ),
                                         ListView.builder(
@@ -146,8 +171,9 @@ class _HomePageState extends State<HomePage> {
                                                 'Amount: \$${expensesSnapshot.data![index]['amount']}, Category: ${expensesSnapshot.data![index]['category']}',
                                                 textAlign: TextAlign.center,
                                                 style: const TextStyle(
-                                                  fontSize: 16.0,
-                                                  color: Colors.white,
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color.fromARGB(255, 0, 0, 0),
                                                 ),
                                               ),
                                             );
@@ -161,7 +187,8 @@ class _HomePageState extends State<HomePage> {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 20.0,
-                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color.fromARGB(255, 0, 0, 0),
                                       ),
                                     );
                                   }
@@ -177,7 +204,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Container(
-              color: Colors.purple.shade300,
+              color: Colors.blue.shade900,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -207,14 +234,6 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                     icon: const Icon(Icons.trending_up, color: Colors.white),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.help_center_outlined),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.help_center_outlined),
                   ),
                 ],
               ),
