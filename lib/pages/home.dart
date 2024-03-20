@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Graphs()),
+                        MaterialPageRoute(builder: (context) => ExpenseGraph()),
                       );
                     },
                     icon: const Icon(Icons.trending_up, color: Colors.white),
