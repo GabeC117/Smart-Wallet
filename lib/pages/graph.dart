@@ -9,77 +9,152 @@ class ExpenseGraph extends StatefulWidget {
 
 class _ExpenseGraphState extends State<ExpenseGraph> {
   final UserDatabase _userDatabase = UserDatabase();
+  late double remainingBudget; // Declare remainingBudget as an instance variable
+
+
+  @override
+  void initState() {
+    super.initState();
+    calculateRemainingBudget();
+  }
+
+  void calculateRemainingBudget() async {
+    // Get the budget and expenses
+    double budget = await _userDatabase.getBudget() ?? 0.0;
+    List<Map<String, dynamic>> expenses = await _userDatabase.getExMap() ?? [];
+
+    // Calculate total expenses
+    double totalExpense = 0.0;
+    expenses.forEach((exp) {
+      double amount = exp['amount']?.toDouble() ?? 0.0;
+      totalExpense += amount;
+    });
+
+    // Calculate remaining budget
+    setState(() {
+      remainingBudget = budget - totalExpense;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>?>(
-      future: _userDatabase.getExMap(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No expenses data available');
-        } else {
-          return _buildPieChart(snapshot.data!);
-        }
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Expense Graph'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: FutureBuilder<List<Map<String, dynamic>>?>(
+          future: _userDatabase.getExMap(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text('No expenses data available'),
+              );
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.0,
+                    child: _buildPieChart(snapshot.data!),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildLegend(snapshot.data!, remainingBudget),
+                ],
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 
   Widget _buildPieChart(List<Map<String, dynamic>> expenses) {
-    return FutureBuilder<double?>(
-      future: _userDatabase.getBudget(),
-      builder: (context, budgetSnapshot) {
-        if (budgetSnapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (budgetSnapshot.hasError) {
-          return Text('Error retrieving budget: ${budgetSnapshot.error}');
-        } else {
-          // Retrieve the budget value from the snapshot data
-          final double budget = budgetSnapshot.data ?? 0.0;
-          
-          // Aggregate amounts for each category
-          Map<String, double> categoryAmounts = {};
-          expenses.forEach((exp) {
-            final String category = exp['category'] ?? 'Unknown';
-            final double amount = exp['amount']?.toDouble() ?? 0.0;
-            categoryAmounts[category] = (categoryAmounts[category] ?? 0.0) + amount;
-          });
-
-          List<Color> colors = [
-            Colors.red,
-            Colors.blue,
-            Colors.green,
-            Colors.yellow,
-            Colors.orange,
-            Colors.purple,
-            // Add more colors as needed
-          ];
-
-          List<PieChartSectionData> pieData = categoryAmounts.entries.map((entry) {
-            final String category = entry.key;
-            final double amount = entry.value;
-            final double percentage = (amount / budget) * 100.0; // Calculate percentage of expenses compared to budget
-            final Color color = colors[categoryAmounts.keys.toList().indexOf(category) % colors.length];
-
-            return PieChartSectionData(
-              color: color,
-              value: amount,
-              title: '$category\n${percentage.toStringAsFixed(1)}%', // Display category and percentage compared to budget
-              radius: 50,
-              titleStyle: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+    return Container(
+      constraints: BoxConstraints(maxHeight: 300), // Adjust maxHeight as needed
+      child: FutureBuilder<double?>(
+        future: _userDatabase.getBudget(),
+        builder: (context, budgetSnapshot) {
+          if (budgetSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
             );
-          }).toList();
+          } else if (budgetSnapshot.hasError) {
+            return Center(
+              child: Text('Error retrieving budget: ${budgetSnapshot.error}'),
+            );
+          } else {
+            final double budget = budgetSnapshot.data ?? 0.0;
 
-          return AspectRatio(
-            aspectRatio: 1.0,
-            child: PieChart(
+            Map<String, double> categoryAmounts = {};
+            double totalExpense = 0.0;
+            expenses.forEach((exp) {
+              final String category = exp['category'] ?? 'Unknown';
+              final double amount = exp['amount']?.toDouble() ?? 0.0;
+              categoryAmounts[category] = (categoryAmounts[category] ?? 0.0) + amount;
+              totalExpense += amount;
+            });
+
+            // Calculate remaining budget
+            double remainingBudget = budget - totalExpense;
+
+            List<Color> colors = [
+              Colors.red,
+              Colors.blue,
+              Colors.green,
+              Colors.yellow,
+              Colors.orange,
+              Colors.purple,
+            ];
+
+            List<PieChartSectionData> pieData = categoryAmounts.entries.map((entry) {
+              final String category = entry.key;
+              final double amount = entry.value;
+              final double percentage = (amount / budget) * 100.0;
+              final Color color = colors[categoryAmounts.keys.toList().indexOf(category) % colors.length];
+
+              return PieChartSectionData(
+                color: color,
+                value: amount,
+                title: '', 
+                radius: 50,
+                titleStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              );
+            }).toList();
+
+            // Add section for unused budget
+            if (remainingBudget > 0) {
+              pieData.add(
+                PieChartSectionData(
+                  color: Colors.grey, 
+                  value: remainingBudget,
+                  title: '',
+                  radius: 50,
+                  titleStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              );
+            }
+
+            // Now that we have both budget and expenses, we can build the pie chart
+            return PieChart(
               PieChartData(
                 sections: pieData,
                 borderData: FlBorderData(show: false),
@@ -87,10 +162,70 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                 centerSpaceRadius: 40,
                 centerSpaceColor: Colors.white,
               ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+
+  Widget _buildLegend(List<Map<String, dynamic>> expenses, double remainingBudget) {
+    List<Widget> legendItems = [];
+    Set<String> categories = expenses.map((exp) => exp['category'] as String).toSet();
+    List<Color> colors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.yellow,
+      Colors.orange,
+      Colors.purple,
+    ];
+
+    int index = 0;
+    for (String category in categories) {
+      legendItems.add(
+        Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: colors[index % colors.length],
+                shape: BoxShape.circle,
+              ),
             ),
-          );
-        }
-      },
+            SizedBox(width: 5),
+            Text(category),
+          ],
+        ),
+      );
+      index++;
+    }
+
+    // Add legend item for unused budget
+    if (remainingBudget > 0) {
+      legendItems.add(
+        Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.grey, 
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: 5),
+            Text('Unused Budget'),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: legendItems,
     );
   }
 }
