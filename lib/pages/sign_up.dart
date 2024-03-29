@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_wallet/main.dart';
+import 'package:smart_wallet/pages/log_in.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -17,17 +18,22 @@ class _SignUpState extends State<SignUp> {
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
-        'username': _usernameController.text.trim(),
-      });
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'username': _usernameController.text.trim(),
+        });
 
         // Sign up successful
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up successful')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Sign up successful')));
         // navigate the user to another screen
         Navigator.pop(
           context,
@@ -41,7 +47,8 @@ class _SignUpState extends State<SignUp> {
         } else if (e.code == 'email-already-in-use') {
           message = 'An account already exists for that email.';
         }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
@@ -98,7 +105,6 @@ class _SignUpState extends State<SignUp> {
                     return null;
                   },
                 ),
-
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(labelText: 'Username'),
@@ -113,8 +119,6 @@ class _SignUpState extends State<SignUp> {
                     return null;
                   },
                 ),
-
-
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _signUp,

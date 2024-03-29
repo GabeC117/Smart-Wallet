@@ -6,6 +6,7 @@ import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/graph.dart';
 import 'package:smart_wallet/pages/receipt.dart';
 import 'package:smart_wallet/classes/firebase_classes.dart';
+import 'package:smart_wallet/utils/theme/theme.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,7 +38,12 @@ class _HomePageState extends State<HomePage> {
     // Calculate remaining budget once futures are resolved
     Future.wait([_budgetFuture, _recentExpensesFuture]).then((values) {
       double budget = values[0] as double? ?? 0.0;
-      double expenses = (values[1] as List<Map<String, dynamic>>?)?.fold<double>(0.0, (sum, expense) => sum + (expense['amount'] as double? ?? 0.0)) ?? 0.0;
+      double expenses = (values[1] as List<Map<String, dynamic>>?)
+              ?.fold<double>(
+                  0.0,
+                  (sum, expense) =>
+                      sum + (expense['amount'] as double? ?? 0.0)) ??
+          0.0;
 
       setState(() {
         _remainingBudget = budget - expenses;
@@ -54,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: MyDrawer(),
       body: Container(
-        color: Color.fromARGB(255, 255, 255, 255),
+        //color: Color.fromARGB(255, 255, 255, 255),
         child: Column(
           children: <Widget>[
             Expanded(
@@ -112,7 +118,8 @@ class _HomePageState extends State<HomePage> {
                                             style: const TextStyle(
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(255, 0, 0, 0),
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
                                             ),
                                           ),
                                         ),
@@ -123,7 +130,8 @@ class _HomePageState extends State<HomePage> {
                                             style: const TextStyle(
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(255, 0, 0, 0),
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
                                             ),
                                           ),
                                         ),
@@ -173,7 +181,8 @@ class _HomePageState extends State<HomePage> {
                                                 style: const TextStyle(
                                                   fontSize: 20.0,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Color.fromARGB(255, 0, 0, 0),
+                                                  color: Color.fromARGB(
+                                                      255, 0, 0, 0),
                                                 ),
                                               ),
                                             );
