@@ -9,8 +9,8 @@ class ExpenseGraph extends StatefulWidget {
 
 class _ExpenseGraphState extends State<ExpenseGraph> {
   final UserDatabase _userDatabase = UserDatabase();
-  late double remainingBudget; // Declare remainingBudget as an instance variable
-
+  late double
+      remainingBudget; // Declare remainingBudget as an instance variable
 
   @override
   void initState() {
@@ -57,20 +57,32 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                 child: Text('Error: ${snapshot.error}'),
               );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text('No expenses data available'),
               );
             } else {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AspectRatio(
-                    aspectRatio: 1.0,
-                    child: _buildPieChart(snapshot.data!),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildLegend(snapshot.data!, remainingBudget),
-                ],
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+                      mainAxisAlignment: MainAxisAlignment.center, // Center horizontally
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: _buildPieChart(snapshot.data!),
+                        ),
+                        SizedBox(
+                            width: 20), // Add some spacing between the chart and the legend
+                        Expanded(
+                          flex: 2,
+                          child: _buildLegend(snapshot.data!, remainingBudget),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               );
             }
           },
@@ -101,7 +113,8 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
             expenses.forEach((exp) {
               final String category = exp['category'] ?? 'Unknown';
               final double amount = exp['amount']?.toDouble() ?? 0.0;
-              categoryAmounts[category] = (categoryAmounts[category] ?? 0.0) + amount;
+              categoryAmounts[category] =
+                  (categoryAmounts[category] ?? 0.0) + amount;
               totalExpense += amount;
             });
 
@@ -117,16 +130,19 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
               Colors.purple,
             ];
 
-            List<PieChartSectionData> pieData = categoryAmounts.entries.map((entry) {
+            List<PieChartSectionData> pieData =
+                categoryAmounts.entries.map((entry) {
               final String category = entry.key;
               final double amount = entry.value;
               final double percentage = (amount / budget) * 100.0;
-              final Color color = colors[categoryAmounts.keys.toList().indexOf(category) % colors.length];
+              final Color color = colors[
+                  categoryAmounts.keys.toList().indexOf(category) %
+                      colors.length];
 
               return PieChartSectionData(
                 color: color,
                 value: amount,
-                title: '', 
+                title: '',
                 radius: 50,
                 titleStyle: TextStyle(
                   fontSize: 14,
@@ -140,7 +156,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
             if (remainingBudget > 0) {
               pieData.add(
                 PieChartSectionData(
-                  color: Colors.grey, 
+                  color: Colors.grey,
                   value: remainingBudget,
                   title: '',
                   radius: 50,
@@ -169,10 +185,11 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
     );
   }
 
-
-  Widget _buildLegend(List<Map<String, dynamic>> expenses, double remainingBudget) {
+  Widget _buildLegend(
+      List<Map<String, dynamic>> expenses, double remainingBudget) {
     List<Widget> legendItems = [];
-    Set<String> categories = expenses.map((exp) => exp['category'] as String).toSet();
+    Set<String> categories =
+        expenses.map((exp) => exp['category'] as String).toSet();
     List<Color> colors = [
       Colors.red,
       Colors.blue,
@@ -212,7 +229,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: Colors.grey, 
+                color: Colors.grey,
                 shape: BoxShape.circle,
               ),
             ),
