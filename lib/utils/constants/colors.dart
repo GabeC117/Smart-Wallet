@@ -52,6 +52,6 @@ class SW_Colors {
   // Error and Validation Colors
   static const Color black = Color(0xFF232323);
   static const Color darkerGrey = Color(0xFF4f4f4f);
-  static const Color darkGrey = Color(0xFF939393);
-  static const Color grey = Color(0xFF1976d2);
+  static const Color darkGrey = Color(0xFF808080);
+  static const Color grey = Color(0xFF939393);
 }

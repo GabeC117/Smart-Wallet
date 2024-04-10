@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:smart_wallet/main.dart';
-import 'package:smart_wallet/pages/log_in.dart';
+import 'package:smart_wallet/pages/login.dart';
 
 void main() {
   group('LoginPage Widget Tests', () {
