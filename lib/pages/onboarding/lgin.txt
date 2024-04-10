@@ -1,61 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:smart_wallet/components/my_button.dart';
-import 'package:smart_wallet/components/square_tile.dart';
-import 'package:smart_wallet/components/my_textfield.dart';
-import 'package:smart_wallet/pages/home.dart';
-import 'package:smart_wallet/pages/sign_up.dart';
-import 'package:smart_wallet/pages/forgot_password.dart';
-import 'package:smart_wallet/utils/theme/theme.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-
-class LoginPage extends StatefulWidget {
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool rememberMeValue = false;
-
-  Future<void> _login() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _usernameController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      // Sign up successful
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Sign in successful')));
-      // Optionally, navigate the user to another screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } on FirebaseAuthException catch (e) {
-      // Handle errors
-      var message = 'An error occurred. Please try again later.';
-      if (e.code == 'user-not-found') {
-        message = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        message = 'Wrong password provided for that user.';
-      }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      //backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
+child: Column(
             children: [
               const SizedBox(height: 50.0),
               //logo
@@ -199,8 +142,3 @@ class _LoginPageState extends State<LoginPage> {
               )
             ],
           ),
-        ),
-      ),
-    );
-  }
-}

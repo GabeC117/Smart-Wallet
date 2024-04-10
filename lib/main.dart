@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smart_wallet/pages/home.dart';
-import 'package:smart_wallet/pages/log_in.dart';
 import 'package:smart_wallet/pages/onboarding/onboarding.dart';
-import 'package:smart_wallet/pages/sign_up.dart';
-import 'package:smart_wallet/pages/forgot_password.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:smart_wallet/pages/splash_screen.dart';
 import 'package:smart_wallet/utils/theme/theme.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'package:camera/camera.dart';

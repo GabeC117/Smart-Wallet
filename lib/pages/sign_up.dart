@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_wallet/main.dart';
-import 'package:smart_wallet/pages/log_in.dart';
+import 'package:smart_wallet/pages/login.dart';
 
 class SignUp extends StatefulWidget {
   @override
