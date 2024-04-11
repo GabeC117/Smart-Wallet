@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_wallet/classes/firebase_classes.dart';
-import 'dart:math';
-
 
 class AddExpense extends StatefulWidget {
   final VoidCallback? onUpdateBudgetPage; // Callback function
@@ -9,15 +11,10 @@ class AddExpense extends StatefulWidget {
   AddExpense({this.onUpdateBudgetPage});
 
   @override
-  _AddExpense createState() => _AddExpense();
+  _AddExpenseState createState() => _AddExpenseState();
 }
 
-Future<void> setEx(double a, String c) async {
-  UserDatabase userDatabase = UserDatabase();
-  await userDatabase.setEx(a, c);
-}
-
-class _AddExpense extends State<AddExpense> {
+class _AddExpenseState extends State<AddExpense> {
   final TextEditingController _expenseController = TextEditingController();
   String _selectedCategory = 'Select a Category';
   final List<String> _categories = [
@@ -28,6 +25,41 @@ class _AddExpense extends State<AddExpense> {
     'Utilities',
     'Other',
   ];
+  File? _image;
+  final _picker = ImagePicker();
+
+  Future<void> _takePicture() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _uploadExpenseWithImage(double expense, String category, File? imageFile) async {
+    String? imageUrl;
+    // Upload the image to Firebase Storage if it exists
+    if (imageFile != null) {
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      String fileName = 'expense_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      Reference storageRef = FirebaseStorage.instance.ref().child('images/$userId/$fileName');
+      await storageRef.putFile(imageFile);
+      imageUrl = await storageRef.getDownloadURL();
+    }
+
+    // Upload the expense to the database with the image URL
+    UserDatabase userDatabase = UserDatabase();
+    await userDatabase.setEx(expense, category, imageUrl);
+  }
+
+  void _resetForm() {
+    _expenseController.clear();
+    setState(() {
+      _selectedCategory = 'Select a Category';
+      _image = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +69,6 @@ class _AddExpense extends State<AddExpense> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Call the callback function when pressing the back button
             widget.onUpdateBudgetPage?.call();
             Navigator.pop(context);
           },
@@ -76,10 +107,20 @@ class _AddExpense extends State<AddExpense> {
                 ),
               ),
             ),
+            if (_image != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.file(_image!),
+              ),
+            ElevatedButton(
+              onPressed: _takePicture,
+              child: const Text('Take Picture'),
+            ),
             ElevatedButton(
               onPressed: () {
                 final double expense = double.tryParse(_expenseController.text) ?? 0.0;
-                setEx(expense, _selectedCategory);
+                _uploadExpenseWithImage(expense, _selectedCategory, _image);
+                _resetForm();
               },
               child: const Text('Add Expense'),
             ),
