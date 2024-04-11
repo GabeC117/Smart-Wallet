@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_wallet/pages/home.dart';
-import 'package:smart_wallet/pages/sign_up.dart';
-import 'package:smart_wallet/pages/forgot_password.dart';
+import 'package:smart_wallet/pages/signup/sign_up.dart';
+import 'package:smart_wallet/pages/login/forgot_password.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';

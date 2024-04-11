@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_wallet/utils/constants/colors.dart';
 
 class SW_CheckBoxTheme {
   SW_CheckBoxTheme._();
@@ -15,9 +16,9 @@ class SW_CheckBoxTheme {
     }),
     fillColor: MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
-        return Colors.blue;
+        return SW_Colors.primary;
       } else {
-        return Colors.transparent;
+        return Colors.grey;
       }
     }),
   );
@@ -34,9 +35,9 @@ class SW_CheckBoxTheme {
     }),
     fillColor: MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.selected)) {
-        return Colors.blue;
+        return SW_Colors.primary;
       } else {
-        return Colors.transparent;
+        return Colors.grey;
       }
     }),
   );

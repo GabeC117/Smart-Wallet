@@ -4,6 +4,8 @@ class SW_Images {
 
   static const String google = 'assets/logos/google-icon.png';
   static const String apple = 'assets/logos/apple-icon.png';
+  static const String appleWhite = 'assets/logos/apple-white-icon.png';
+
 
   static const String onBoardingImage1 =
       'assets/images/on_boarding_images/gif1.gif';

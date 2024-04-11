@@ -7,7 +7,7 @@ import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/home.dart';
 import 'package:smart_wallet/components/list_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:smart_wallet/pages/login.dart';
+import 'package:smart_wallet/pages/login/login.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
