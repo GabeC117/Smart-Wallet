@@ -10,6 +10,10 @@ class SW_OutlinedButtonTheme {
           (states) => Colors.black.withOpacity(0.1)),
       side: MaterialStateProperty.resolveWith(
           (states) => BorderSide(color: Colors.black)),
+      padding: MaterialStateProperty.resolveWith(
+          (states) => const EdgeInsets.symmetric(vertical: 18)),
+      shape: MaterialStateProperty.resolveWith((states) =>
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
     ),
   );
 
@@ -19,7 +23,13 @@ class SW_OutlinedButtonTheme {
       overlayColor: MaterialStateColor.resolveWith(
           (states) => Colors.white.withOpacity(0.1)),
       side: MaterialStateProperty.resolveWith(
-          (states) => BorderSide(color: Colors.white)),
+          (states) => BorderSide(color: Colors.white)),      
+      padding: MaterialStateProperty.resolveWith(
+          (states) => const EdgeInsets.symmetric(vertical: 18)),
+      shape: MaterialStateProperty.resolveWith(
+        (states) => RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12))),
+
     ),
   );
 }

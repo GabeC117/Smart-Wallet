@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_wallet/pages/login.dart';
+import 'package:smart_wallet/pages/login/login.dart';
 import 'package:smart_wallet/pages/onboarding/onboarding.dart';
 import 'package:smart_wallet/utils/helpers/helper_functions.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

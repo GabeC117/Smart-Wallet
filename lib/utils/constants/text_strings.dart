@@ -2,6 +2,8 @@ class SW_Texts {
   // Global Texts
   static const String appName = 'Smart Wallet';
   static const String continueTxt = 'Continue';
+  static const String and = 'and';
+
 
   // OnBoarding Texts
   static const String onBoardingTitle1 = 'Welcome to Smart Wallet!';
@@ -23,10 +25,11 @@ class SW_Texts {
   // Authentication Form Text
   static const String firstName = "First Name";
   static const String lastName = "Last Name";
-  static const String email = "E-Mail";
+  static const String email = "Email";
   static const String password = "Password";
+  static const String confirmPassword = "Confirm Password";
   static const String newPassword = "New Password";
-  static const String username = "Usernane";
+  static const String username = "Username";
   static const String phoneNumber = "Phone Number";
   static const String rememberMe = "Remember Me";
   static const String forgotPassword = "Forgot Password?";
@@ -36,7 +39,7 @@ class SW_Texts {
   static const String orSignUpwith = "or sign up with";
   static const String iAgreeTo = "I agree to";
   static const String privacyPolicy = "Privacy Policy";
-  static const String terns0fUse = "Terms of use";
+  static const String termsOfUse = "Terms of use";
   static const String verificationCode = "verificationCode";
   static const String resendEmail = "Resend Email";
   static const String resendEmailIn = "Resend enail in";
@@ -45,9 +48,9 @@ class SW_Texts {
   static const String loginTitle = "Welcome back!";
   static const String loginSubTitle = 'Empowering your financial journey';
   static const String signupTitle = "Let's create your account";
-  static const String forgetPasswordTitle = "Forget password";
-  static const String forgetPasswordSubTitle =
-      "Don't worry sometimes people can forget too, enter your email and we will send you a password reset link.";
+  static const String forgotPasswordTitle = "Forgot Password?";
+  static const String forgotPasswordSubTitle =
+      "Please provide your email address, and we will send you a link to reset your password.";
   static const String changeYourPasswordTitle = "Password Reset Email Sent";
   static const String changeYourPasswordsubTitle =
       "Your Account Security is Our Priority! We've Sent You a Secure Link to Safely Change Your Password and Keep Your Account Protected.";

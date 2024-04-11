@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:smart_wallet/components/text_box.dart';
@@ -8,6 +9,9 @@ import 'package:smart_wallet/classes/firebase_classes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_wallet/pages/home.dart';
+import 'package:smart_wallet/pages/login/login.dart';
+
+import '../utils/helpers/helper_functions.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -31,6 +35,29 @@ class _AccountState extends State<Account> {
     _emailFuture = UserDatabase().getEmail();
     _fetchProfilePictureUrl(); // Retrieve profile picture URL when the page initializes
   }
+
+    Future<void> _removeAccount(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.currentUser?.delete();
+      // Sign out the user after account removal
+      await FirebaseAuth.instance.signOut();
+      Get.to(() => LoginPage());// Close the current screen
+      // Optionally, navigate to another screen or show a confirmation message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Your account has been successfully removed.'),
+        ),
+      );
+    } catch (e) {
+      // Handle account removal errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred while removing your account.'),
+        ),
+      );
+    }
+  }
+
 
   Future<void> editField(String field) async {
     if (field == 'username') {
@@ -111,13 +138,14 @@ class _AccountState extends State<Account> {
   // Widget build method remains unchanged
   @override
   Widget build(BuildContext context) {
+    final dark = SW_Helpers.isDarkMode(context);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue.shade900,
+        //backgroundColor: Colors.blue.shade900,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.white,
           ),
           onPressed: () {
             Navigator.push(
@@ -127,7 +155,6 @@ class _AccountState extends State<Account> {
           },
         ),
         title: const Text('Account'),
-        centerTitle: true,
       ),
       body: Column(
         children: <Widget>[
@@ -255,7 +282,7 @@ class _AccountState extends State<Account> {
                                         title: Text('Edit Email'),
                                         content: TextFormField(
                                           controller: _emailController,
-                                          decoration: InputDecoration(
+                                          decoration: const InputDecoration(
                                             hintText: 'Enter new email',
                                           ),
                                         ),
@@ -288,53 +315,53 @@ class _AccountState extends State<Account> {
               },
             ),
           ),
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.blue.shade900),
+          SizedBox(
+            width: 160,
+            child: ElevatedButton(
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance
+                      .sendPasswordResetEmail(email: currentUser.email!);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Password Reset Email Sent'),
+                        content: const Text(
+                            'Please check your email to reset your password.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } catch (e) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Error'),
+                        content: const Text(
+                            'Failed to send password reset email. Please try again later.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  print('Failed to send password reset email: $e');
+                }
+              },
+              child: const Text('Change Password'),
             ),
-            onPressed: () async {
-              try {
-                await FirebaseAuth.instance
-                    .sendPasswordResetEmail(email: currentUser.email!);
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Password Reset Email Sent'),
-                      content: Text(
-                          'Please check your email to reset your password.'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              } catch (e) {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Error'),
-                      content: Text(
-                          'Failed to send password reset email. Please try again later.'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-                print('Failed to send password reset email: $e');
-              }
-            },
-            child: Text('Change Password'),
           ),
+          ElevatedButton(onPressed: () {_removeAccount(context);}, child: const Text('Remove Account')),
           const SizedBox(height: 50),
         ],
       ),
