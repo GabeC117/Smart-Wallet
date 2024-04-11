@@ -194,27 +194,27 @@ class UserDatabase {
     }
   }
 
-  Future<void> setEx(double amount, String category) async {
+ 
+  Future<void> setEx(double amount, String category, String? imageUrl) async {
     try {
-      // Get reference to Firestore collection
       CollectionReference expenses = _firestore
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('expenses');
       String customId = _generateRandomId();
 
-      // Add a new document to the expenses collection with custom ID
       await expenses.doc(customId).set({
         'amount': amount,
         'category': category,
-        'createdAt':
-            FieldValue.serverTimestamp(), // Timestamp indicating creation time
+        'imageUrl': imageUrl, // Store the image URL
+        'createdAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      // Handle errors here
-      print('Error: $e');
+      print('Error setting expense: $e');
     }
   }
+
+ 
 
   Future<double?> getExAmount() async {
     //grab all amounts from all docs and return the addition of them all
