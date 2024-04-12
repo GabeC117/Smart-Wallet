@@ -6,7 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:smart_wallet/common/login_signup_widgets/form_divider.dart';
 import 'package:smart_wallet/common/login_signup_widgets/social_buttons.dart';
 import 'package:smart_wallet/main.dart';
-import 'package:smart_wallet/pages/home.dart';
+import 'package:smart_wallet/pages/home/home.dart';
 import 'package:smart_wallet/pages/login/login.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
 import 'package:smart_wallet/utils/constants/sizes.dart';

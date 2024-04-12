@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:smart_wallet/pages/home.dart';
+import 'package:smart_wallet/pages/home/home.dart';
 import 'package:smart_wallet/pages/signup/sign_up.dart';
 import 'package:smart_wallet/pages/login/forgot_password.dart';
 

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smart_wallet/common/styles/spacing_styles.dart';
 import 'package:smart_wallet/pages/login/forgot_password.dart';
-import 'package:smart_wallet/pages/home.dart';
+import 'package:smart_wallet/pages/home/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_wallet/pages/login/widgets/login_form.dart';
 import 'package:smart_wallet/pages/signup/sign_up.dart';

@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:smart_wallet/components/list_tile.dart';
 import 'package:smart_wallet/main.dart';
-import 'package:smart_wallet/pages/account.dart';
+import 'package:smart_wallet/pages/account/account.dart';
 import 'package:smart_wallet/pages/budget.dart';
-import 'package:smart_wallet/pages/home.dart';
+import 'package:smart_wallet/pages/home/home.dart';
 import 'package:smart_wallet/components/list_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_wallet/pages/login/login.dart';
+import 'package:smart_wallet/utils/constants/colors.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
@@ -30,17 +33,17 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.only(
+      borderRadius: const BorderRadius.only(
         topRight: Radius.circular(30),
         bottomRight: Radius.circular(30),
       ),
       child: Drawer(
-        backgroundColor: Colors.blue.shade900,
+        backgroundColor: SW_Colors.primary,
         child: Column(
           children: <Widget>[
             // Header
-            DrawerHeader(
-              child: Icon(Icons.person, color: Colors.blue.shade100, size: 70),
+            const DrawerHeader(
+              child: Icon(Icons.person, size: 70),
             ),
             // Home
             MyListTile(
@@ -53,28 +56,18 @@ class MyDrawer extends StatelessWidget {
             MyListTile(
               icon: Icons.person,
               text: 'ACCOUNT',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Account()),
-                );
-              },
+              onTap: () => Get.to(() => Account(),),
             ),
 
             // Budget
             MyListTile(
-              icon: Icons.money,
+              icon: Iconsax.money,
               text: 'BUDGET',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Budget()),
-                );
-              },
+              onTap: () => Get.to(() => Budget(),),
             ),
 
             // Log Out
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.only(bottom: 50.0),
               child: MyListTile(

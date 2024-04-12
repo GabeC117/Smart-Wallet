@@ -17,11 +17,11 @@ class MyListTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.zero,
       child: ListTile(
-        leading: Icon(icon, color: Colors.blue.shade300),
+        leading: Icon(icon, size: 25),
         onTap: onTap,
         title: Text(
           text,
-          style: TextStyle(color: Colors.blue.shade100),
+          style: const TextStyle(fontSize: 15),
         ),
       ),
     );
