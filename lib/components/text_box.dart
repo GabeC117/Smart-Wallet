@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_wallet/utils/constants/colors.dart';
+import 'package:smart_wallet/utils/helpers/helper_functions.dart';
 
 import '../utils/theme/custom_themes/text_field_theme.dart';
 
@@ -15,11 +17,13 @@ class MyTextBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = SW_Helpers.isDarkMode(context);
+
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(8)),
-      padding: EdgeInsets.only(left: 15.0, bottom: 15.0),
-      margin: EdgeInsets.all(20.0),
+          color: dark? Colors.grey[850] : Colors.grey[100], borderRadius: BorderRadius.circular(8)),
+      padding: const EdgeInsets.only(left: 15.0, bottom: 15.0),
+      margin: const EdgeInsets.all(20.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,12 +38,12 @@ class MyTextBox extends StatelessWidget {
 
                 // Button
                 Material(
-                  color: Colors.white,
+                  color: dark? Colors.grey[850] : Colors.grey[100],
                   borderRadius: BorderRadius.circular(30),
                   child: IconButton(
                     onPressed: onPressed,
-                    icon: Icon(Icons.edit),
-                    color: Colors.blue.shade900,
+                    icon: const Icon(Icons.edit),
+                    color: SW_Colors.primary,
                   ),
                 ),
               ],

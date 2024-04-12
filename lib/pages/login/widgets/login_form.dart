@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:smart_wallet/pages/login/forgot_password.dart';
-import 'package:smart_wallet/pages/home.dart';
+import 'package:smart_wallet/pages/home/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_wallet/pages/signup/sign_up.dart';
 import 'package:smart_wallet/utils/constants/sizes.dart';

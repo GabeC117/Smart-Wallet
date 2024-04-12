@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_wallet/classes/firebase_classes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smart_wallet/utils/constants/colors.dart';
+import 'package:smart_wallet/utils/constants/sizes.dart';
 
 class PicturePage extends StatefulWidget {
   @override
@@ -27,7 +29,9 @@ class _PicturePageState extends State<PicturePage> {
       FirebaseStorage storage = FirebaseStorage.instance;
 
       // Create a reference to the folder where your images are stored
-      Reference imagesRef = storage.ref().child('images/${FirebaseAuth.instance.currentUser?.uid}');
+      Reference imagesRef = storage
+          .ref()
+          .child('images/${FirebaseAuth.instance.currentUser?.uid}');
 
       // Get the list of files in the folder
       ListResult result = await imagesRef.listAll();
@@ -48,7 +52,6 @@ class _PicturePageState extends State<PicturePage> {
     }
   }
 
-
   Future<void> _takePicture() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
@@ -62,31 +65,77 @@ class _PicturePageState extends State<PicturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Take a Picture'),
+        title: const Text('Take a Picture'),
       ),
-      body: ListView.builder(
-        itemCount: _imageUrls.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Image.network(
-              _imageUrls[index],
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return CircularProgressIndicator(
-                  value: progress.expectedTotalBytes != null
-                      ? progress.cumulativeBytesLoaded /
-                          progress.expectedTotalBytes!
-                      : null,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: SW_Sizes.defaultSpace),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3, // Three pictures per row
+            crossAxisSpacing: 15.0,
+            mainAxisSpacing: 8.0,
+            childAspectRatio: 0.7,
+          ),
+          itemCount: _imageUrls.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          child: Image.network(
+                            _imageUrls[index],
+                            loadingBuilder: (context, child, progress) {
+                              if (progress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: progress.expectedTotalBytes != null
+                                      ? progress.cumulativeBytesLoaded /
+                                          progress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
-            ),
-          );
-        },
+              child: Image.network(
+                _imageUrls[index],
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: progress.expectedTotalBytes != null
+                          ? progress.cumulativeBytesLoaded /
+                              progress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                cacheWidth: 120,
+              ),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: SW_Colors.primary,
         onPressed: _takePicture,
         tooltip: 'Take Picture',
-        child: Icon(Icons.camera_alt),
+        child: const Icon(Icons.camera_alt),
       ),
     );
   }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:smart_wallet/components/drawer.dart';
+import 'package:smart_wallet/pages/home/widgets/drawer.dart';
 import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/receipt.dart';
 import 'package:smart_wallet/pages/graph.dart'; // Import the ExpenseGraph page
 import 'package:smart_wallet/classes/firebase_classes.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import the necessary chart library
+import 'package:smart_wallet/pages/home/widgets/navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -54,12 +55,11 @@ class _HomePageState extends State<HomePage> {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      backgroundColor: Colors.blue.shade900,
       title: const Text('Smart Wallet'),
     ),
-    drawer: MyDrawer(),
+    drawer: const MyDrawer(),
+    bottomNavigationBar: navigationBar(),
     body: Container(
-      color: Colors.white,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -85,7 +85,6 @@ Widget build(BuildContext context) {
                             style: TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
                             ),
                           ),
                         ),
@@ -119,7 +118,6 @@ Widget build(BuildContext context) {
                                           style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.black,
                                           ),
                                         ),
                                       ),
@@ -130,7 +128,6 @@ Widget build(BuildContext context) {
                                           style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.black,
                                           ),
                                         ),
                                       ),
@@ -196,41 +193,41 @@ Widget build(BuildContext context) {
               },
             ),
           ),
-          Container(
-            color: Colors.blue.shade900,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Budget()),
-                    ).then((value) => _fetchData());
-                  },
-                  icon: Icon(Icons.attach_money, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PicturePage()),
-                    );
-                  },
-                  icon: Icon(Icons.camera_enhance, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ExpenseGraph()),
-                    );
-                  },
-                  icon: Icon(Icons.trending_up, color: Colors.white),
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   color: Colors.blue.shade900,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: <Widget>[
+          //       IconButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => Budget()),
+          //           ).then((value) => _fetchData());
+          //         },
+          //         icon: Icon(Icons.attach_money, color: Colors.white),
+          //       ),
+          //       IconButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => PicturePage()),
+          //           );
+          //         },
+          //         icon: Icon(Icons.camera_enhance, color: Colors.white),
+          //       ),
+          //       IconButton(
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => ExpenseGraph()),
+          //           );
+          //         },
+          //         icon: Icon(Icons.trending_up, color: Colors.white),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     ),
@@ -407,7 +404,6 @@ Widget _buildLegend(
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
           ),
         ),
       ),
