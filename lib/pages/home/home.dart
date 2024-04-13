@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_wallet/pages/home/widgets/drawer.dart';
 import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/receipt.dart';
-import 'package:smart_wallet/pages/graph.dart'; // Import the ExpenseGraph page
+import 'package:smart_wallet/pages/graph/graph.dart'; // Import the ExpenseGraph page
 import 'package:smart_wallet/classes/firebase_classes.dart';
 import 'package:fl_chart/fl_chart.dart'; // Import the necessary chart library
 import 'package:smart_wallet/pages/home/widgets/navigation_bar.dart';
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   late Future<List<Map<String, dynamic>>?> _recentExpensesFuture;
   double _remainingBudget = 0.0;
   final UserDatabase _userDatabase = UserDatabase();
-  late double remainingBudget;
+  late double remainingBudget = 0.0;
   List<Map<String, dynamic>>? _expenses;
   //final double budget = budgetSnapshot.data ?? 0.0;
 
@@ -193,41 +193,7 @@ Widget build(BuildContext context) {
               },
             ),
           ),
-          // Container(
-          //   color: Colors.blue.shade900,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: <Widget>[
-          //       IconButton(
-          //         onPressed: () {
-          //           Navigator.push(
-          //             context,
-          //             MaterialPageRoute(builder: (context) => Budget()),
-          //           ).then((value) => _fetchData());
-          //         },
-          //         icon: Icon(Icons.attach_money, color: Colors.white),
-          //       ),
-          //       IconButton(
-          //         onPressed: () {
-          //           Navigator.push(
-          //             context,
-          //             MaterialPageRoute(builder: (context) => PicturePage()),
-          //           );
-          //         },
-          //         icon: Icon(Icons.camera_enhance, color: Colors.white),
-          //       ),
-          //       IconButton(
-          //         onPressed: () {
-          //           Navigator.push(
-          //             context,
-          //             MaterialPageRoute(builder: (context) => ExpenseGraph()),
-          //           );
-          //         },
-          //         icon: Icon(Icons.trending_up, color: Colors.white),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+        
         ],
       ),
     ),
@@ -338,7 +304,6 @@ Widget build(BuildContext context) {
                   titleStyle: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
               );
@@ -350,7 +315,6 @@ Widget build(BuildContext context) {
                 borderData: FlBorderData(show: false),
                 sectionsSpace: 0,
                 centerSpaceRadius: 40,
-                centerSpaceColor: Colors.white,
               ),
             );
           }
