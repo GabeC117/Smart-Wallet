@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_wallet/pages/budget.dart';
 import 'package:smart_wallet/pages/receipt.dart';
-import 'package:smart_wallet/pages/graph.dart'; // Import the ExpenseGraph page
+import 'package:smart_wallet/pages/graph/graph.dart'; // Import the ExpenseGraph page
 import 'package:smart_wallet/classes/firebase_classes.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
 
