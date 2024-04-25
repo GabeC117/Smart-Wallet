@@ -33,7 +33,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
   }
 
   Future<void> _fetchBudgetAndExpenses() async {
-    double? budget = await _userDatabase.getBudget();
+    double? budget = await _userDatabase.getBudgets();
     if (budget != null) {
       setState(() {
         _totalBudget = budget;

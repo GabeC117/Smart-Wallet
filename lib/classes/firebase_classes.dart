@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:math';
+import 'package:intl/intl.dart';
 
 class UserDatabase {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -93,24 +94,26 @@ class UserDatabase {
     }
   }
 
-//grabbing budget info
-  Future<double?> getBudget() async {
+  Future<double?> getBudgets() async {
     try {
-      DocumentSnapshot userSnapshot = await _firestore
+      QuerySnapshot<Map<String, dynamic>> budgetSnapshot = await _firestore
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('budgets')
-          .doc('budget_num')
           .get();
 
-      if (userSnapshot.exists) {
-        return userSnapshot.get('num');
+      if (budgetSnapshot.docs.isNotEmpty) {
+        double totalBudget = 0.0;
+        budgetSnapshot.docs.forEach((doc) {
+          double budgetAmount = (doc.get('amount') as num).toDouble();
+          totalBudget += budgetAmount;
+        });
+        return totalBudget;
       } else {
         return null;
       }
     } catch (e) {
-      // Handle any errors that occur during the retrieval process
-      print('Error retrieving username: $e');
+      print('Error retrieving budget: $e');
       return null;
     }
   }
@@ -194,7 +197,6 @@ class UserDatabase {
     }
   }
 
- 
   Future<void> setEx(double amount, String category, String? imageUrl) async {
     try {
       CollectionReference expenses = _firestore
@@ -202,19 +204,84 @@ class UserDatabase {
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('expenses');
       String customId = _generateRandomId();
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('yyyy-MM-dd hh:mm:ss a').format(now);
 
       await expenses.doc(customId).set({
         'amount': amount,
         'category': category,
         'imageUrl': imageUrl, // Store the image URL
-        'createdAt': FieldValue.serverTimestamp(),
+        'createdAt': formattedDate,
       });
     } catch (e) {
       print('Error setting expense: $e');
     }
   }
 
- 
+  Future<double?> getCategoryBudget(String category) async {
+    try {
+      DocumentSnapshot budgetSnapshot = await _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('budgets')
+          .doc(category)
+          .get();
+
+      if (budgetSnapshot.exists) {
+        return budgetSnapshot.get('amount');
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error retrieving category budget: $e');
+      return null;
+    }
+  }
+
+  Future<void> setCategoryBudget(String category, double amount) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('budgets')
+          .doc(category)
+          .set({
+        'category': category,
+        'amount': amount,
+      });
+    } catch (e) {
+      print('Error setting category budget: $e');
+      throw e;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getCategoryExpenses(
+      String category) async {
+    try {
+      List<Map<String, dynamic>> expenses = [];
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('expenses')
+          .where('category', isEqualTo: category)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        expenses.add({
+          'id': doc.id,
+          'amount': doc.get('amount'),
+          'category': doc.get('category'),
+          'createdAt': doc.get('createdAt')
+        });
+      });
+
+      return expenses;
+    } catch (e) {
+      print('Error fetching expenses for category $category: $e');
+      return [];
+    }
+  }
 
   Future<double?> getExAmount() async {
     //grab all amounts from all docs and return the addition of them all
@@ -314,12 +381,12 @@ class UserStorage {
 
   Future<void> uploadFile(File file) async {
     try {
-      Reference storageReference = FirebaseStorage.instance.ref().child('images/${FirebaseAuth.instance.currentUser?.uid}/${DateTime.now().toString()}');
+      Reference storageReference = FirebaseStorage.instance.ref().child(
+          'images/${FirebaseAuth.instance.currentUser?.uid}/${DateTime.now().toString()}');
       UploadTask uploadTask = storageReference.putFile(file);
       await uploadTask.whenComplete(() => print('File Uploaded'));
     } catch (e) {
       print(e);
     }
   }
-
 }
