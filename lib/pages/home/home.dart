@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   void _fetchData() {
     setState(() {
-      _budgetFuture = UserDatabase().getBudget();
+      _budgetFuture = UserDatabase().getBudgets();
       _recentExpensesFuture = UserDatabase().getRecentExpenses();
     });
 
@@ -51,154 +51,164 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void refreshData() {
+    // Call _fetchData to refresh the data
+    _fetchData();
+  }
+
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Smart Wallet'),
-    ),
-    drawer: const MyDrawer(),
-    bottomNavigationBar: navigationBar(),
-    body: Container(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: FutureBuilder<String?>(
-              future: _usernameFuture,
-              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Smart Wallet'),
+      ),
+      drawer: const MyDrawer(),
+      bottomNavigationBar: navigationBar(refreshData),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: FutureBuilder<String?>(
+                future: _usernameFuture,
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
                   } else {
-                    return ListView(
-                      padding: EdgeInsets.all(10), // Adjust padding here
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            'Welcome to your Smart Wallet, ${snapshot.data}!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return ListView(
+                        padding: EdgeInsets.all(10), // Adjust padding here
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              'Welcome to your Smart Wallet, ${snapshot.data}!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        FutureBuilder<double?>(
-                          future: _budgetFuture,
-                          builder: (BuildContext context, AsyncSnapshot<double?> budgetSnapshot) {
-                            if (budgetSnapshot.connectionState == ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              if (budgetSnapshot.hasError) {
-                                return Text('Error fetching budget');
+                          FutureBuilder<double?>(
+                            future: _budgetFuture,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<double?> budgetSnapshot) {
+                              if (budgetSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               } else {
-                                if (budgetSnapshot.data == null) {
-                                  return Text(
-                                    'Budget not set',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: Colors.red,
-                                    ),
-                                  );
+                                if (budgetSnapshot.hasError) {
+                                  return Text('Error fetching budget');
                                 } else {
-                                  return Column(
-                                    children: [
-                                      ListTile(
-                                        title: Text(
-                                          'Current Budget: \$${budgetSnapshot.data}',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
+                                  if (budgetSnapshot.data == null) {
+                                    return Text(
+                                      'Budget not set',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: Colors.red,
+                                      ),
+                                    );
+                                  } else {
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          title: Text(
+                                            'Current Budget: \$${budgetSnapshot.data}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      ListTile(
-                                        title: Text(
-                                          'Remaining Budget: \$$_remainingBudget',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
+                                        ListTile(
+                                          title: Text(
+                                            'Remaining Budget: \$$_remainingBudget',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    );
+                                  }
+                                }
+                              }
+                            },
+                          ),
+                          FutureBuilder<List<Map<String, dynamic>>?>(
+                            future: _recentExpensesFuture,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<Map<String, dynamic>>?>
+                                    expensesSnapshot) {
+                              if (expensesSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                if (expensesSnapshot.hasError) {
+                                  return Text('Error fetching expenses');
+                                } else {
+                                  _expenses = expensesSnapshot.data;
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ExpenseGraph()),
+                                      );
+                                    },
+                                    child: _buildPieChartWidget(),
                                   );
                                 }
                               }
-                            }
-                          },
-                        ),
-                        FutureBuilder<List<Map<String, dynamic>>?>(
-                        future: _recentExpensesFuture,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<Map<String, dynamic>>?>
-                                expensesSnapshot) {
-                          if (expensesSnapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else {
-                            if (expensesSnapshot.hasError) {
-                              return Text('Error fetching expenses');
-                            } else {
-                              _expenses = expensesSnapshot.data;
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => ExpenseGraph()),
-                                  );
-                                },
-                                child: _buildPieChartWidget(),
-                              );
-                            }
-                          }
-                        },
-                      ),
-
-                        FutureBuilder<List<Map<String, dynamic>>?>(
-                          future: _recentExpensesFuture,
-                          builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>?> expensesSnapshot) {
-                            if (expensesSnapshot.connectionState == ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              if (expensesSnapshot.hasError) {
-                                return Text('Error fetching expenses');
-                              } else {
-                                _expenses = expensesSnapshot.data;
-                                return _buildLegend(
-                                  _expenses ?? [], _remainingBudget
+                            },
+                          ),
+                          FutureBuilder<List<Map<String, dynamic>>?>(
+                            future: _recentExpensesFuture,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<Map<String, dynamic>>?>
+                                    expensesSnapshot) {
+                              if (expensesSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
                                 );
+                              } else {
+                                if (expensesSnapshot.hasError) {
+                                  return Text('Error fetching expenses');
+                                } else {
+                                  _expenses = expensesSnapshot.data;
+                                  return _buildLegend(
+                                      _expenses ?? [], _remainingBudget);
+                                }
                               }
-                            }
-                          },
-                        ),
-                      ],
-                    );
+                            },
+                          ),
+                        ],
+                      );
+                    }
                   }
-                }
-              },
+                },
+              ),
             ),
-          ),
-        
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildPieChartWidget() {
     return FutureBuilder<List<Map<String, dynamic>>?>(
@@ -237,7 +247,7 @@ Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(maxHeight: 300),
       child: FutureBuilder<double?>(
-        future: _userDatabase.getBudget(),
+        future: _userDatabase.getBudgets(),
         builder: (context, budgetSnapshot) {
           if (budgetSnapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -323,63 +333,63 @@ Widget build(BuildContext context) {
     );
   }
 
-Widget _buildLegend(
-  List<Map<String, dynamic>> expenses, double remainingBudget) {
-  List<Widget> legendItems = [];
-  Set<String> categories =
-      expenses.map((exp) => exp['category'] as String).toSet();
-  List<Color> colors = [
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
-    Colors.purple,
-  ];
+  Widget _buildLegend(
+      List<Map<String, dynamic>> expenses, double remainingBudget) {
+    List<Widget> legendItems = [];
+    Set<String> categories =
+        expenses.map((exp) => exp['category'] as String).toSet();
+    List<Color> colors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.yellow,
+      Colors.orange,
+      Colors.purple,
+    ];
 
-  int index = 0;
-  for (String category in categories) {
-    legendItems.add(
-      Row(
-        children: [
-          Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              color: colors[index % colors.length],
-              shape: BoxShape.circle,
+    int index = 0;
+    for (String category in categories) {
+      legendItems.add(
+        Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: colors[index % colors.length],
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: 5),
+            Text(category),
+          ],
+        ),
+      );
+      index++;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            'Most Recent Expenses:',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(width: 5),
-          Text(category),
-        ],
-      ),
-    );
-    index++;
-  }
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Text(
-          'Most Recent Expenses:',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        ),
+        SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: legendItems,
           ),
         ),
-      ),
-      SizedBox(height: 8),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: legendItems,
-        ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 }

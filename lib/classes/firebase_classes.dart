@@ -94,24 +94,26 @@ class UserDatabase {
     }
   }
 
-//grabbing budget info
-  Future<double?> getBudget() async {
+  Future<double?> getBudgets() async {
     try {
-      DocumentSnapshot userSnapshot = await _firestore
+      QuerySnapshot<Map<String, dynamic>> budgetSnapshot = await _firestore
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser?.uid)
           .collection('budgets')
-          .doc('budget_num')
           .get();
 
-      if (userSnapshot.exists) {
-        return userSnapshot.get('num');
+      if (budgetSnapshot.docs.isNotEmpty) {
+        double totalBudget = 0.0;
+        budgetSnapshot.docs.forEach((doc) {
+          double budgetAmount = (doc.get('amount') as num).toDouble();
+          totalBudget += budgetAmount;
+        });
+        return totalBudget;
       } else {
         return null;
       }
     } catch (e) {
-      // Handle any errors that occur during the retrieval process
-      print('Error retrieving username: $e');
+      print('Error retrieving budget: $e');
       return null;
     }
   }
@@ -195,7 +197,6 @@ class UserDatabase {
     }
   }
 
- 
   Future<void> setEx(double amount, String category, String? imageUrl) async {
     try {
       CollectionReference expenses = _firestore
@@ -217,7 +218,7 @@ class UserDatabase {
     }
   }
 
- Future<double?> getCategoryBudget(String category) async {
+  Future<double?> getCategoryBudget(String category) async {
     try {
       DocumentSnapshot budgetSnapshot = await _firestore
           .collection('users')
@@ -380,12 +381,12 @@ class UserStorage {
 
   Future<void> uploadFile(File file) async {
     try {
-      Reference storageReference = FirebaseStorage.instance.ref().child('images/${FirebaseAuth.instance.currentUser?.uid}/${DateTime.now().toString()}');
+      Reference storageReference = FirebaseStorage.instance.ref().child(
+          'images/${FirebaseAuth.instance.currentUser?.uid}/${DateTime.now().toString()}');
       UploadTask uploadTask = storageReference.putFile(file);
       await uploadTask.whenComplete(() => print('File Uploaded'));
     } catch (e) {
       print(e);
     }
   }
-
 }

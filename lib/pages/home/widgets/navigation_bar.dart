@@ -7,6 +7,10 @@ import 'package:smart_wallet/classes/firebase_classes.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
 
 class navigationBar extends StatefulWidget {
+  final Function() refreshDataCallback;
+
+  navigationBar(this.refreshDataCallback);
+
   @override
   _navigationBarState createState() => _navigationBarState();
 }
@@ -24,7 +28,7 @@ class _navigationBarState extends State<navigationBar> {
   void _fetchData() async {
     try {
       setState(() {
-        _budgetFuture = UserDatabase().getBudget();
+        _budgetFuture = UserDatabase().getBudgets();
         _recentExpensesFuture = UserDatabase().getRecentExpenses();
       });
     } catch (e) {
@@ -50,7 +54,9 @@ class _navigationBarState extends State<navigationBar> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           IconButton(
-            onPressed: () => Get.to(() => Budget(),),
+            onPressed: () => Get.to(() => Budget(),)?.then((value) {
+              widget.refreshDataCallback();
+            }),
             icon: const Icon(Icons.attach_money), 
           ),
           IconButton(
