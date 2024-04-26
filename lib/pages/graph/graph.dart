@@ -25,6 +25,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
   };
   double _totalBudget = 0.0;
   double _totalAmountSpent = 0.0;
+  double _remainingBudget = 0.0;
 
   @override
   void initState() {
@@ -173,9 +174,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                         Row(
                           children: [
                             _buildLegendItem(
-                                entry.key,
-                                _categoryColors[
-                                    entry.key]!),
+                                entry.key, _categoryColors[entry.key]!),
                           ],
                         ),
                         const SizedBox(height: SW_Sizes.spaceBtwSections / 2),
