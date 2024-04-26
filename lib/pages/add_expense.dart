@@ -27,6 +27,13 @@ class _AddExpenseState extends State<AddExpense> {
   ];
   File? _image;
   final _picker = ImagePicker();
+  TextEditingController? _descriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _descriptionController = TextEditingController();
+  }
 
   Future<void> _takePicture() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
@@ -37,24 +44,28 @@ class _AddExpenseState extends State<AddExpense> {
     }
   }
 
-  Future<void> _uploadExpenseWithImage(double expense, String category, File? imageFile) async {
+  Future<void> _uploadExpenseWithImage(
+      double expense, String category, File? imageFile) async {
     String? imageUrl;
     // Upload the image to Firebase Storage if it exists
     if (imageFile != null) {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
       String fileName = 'expense_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      Reference storageRef = FirebaseStorage.instance.ref().child('images/$userId/$fileName');
+      Reference storageRef =
+          FirebaseStorage.instance.ref().child('images/$userId/$fileName');
       await storageRef.putFile(imageFile);
       imageUrl = await storageRef.getDownloadURL();
     }
 
     // Upload the expense to the database with the image URL
     UserDatabase userDatabase = UserDatabase();
-    await userDatabase.setEx(expense, category, imageUrl);
+    await userDatabase.setEx(
+        expense, category, imageUrl, _descriptionController?.text);
   }
 
   void _resetForm() {
     _expenseController.clear();
+    _descriptionController?.clear();
     setState(() {
       _selectedCategory = 'Select a Category';
       _image = null;
@@ -89,7 +100,8 @@ class _AddExpenseState extends State<AddExpense> {
                     _selectedCategory = newValue!;
                   });
                 },
-                items: _categories.map<DropdownMenuItem<String>>((String value) {
+                items:
+                    _categories.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -112,13 +124,24 @@ class _AddExpenseState extends State<AddExpense> {
                 padding: const EdgeInsets.all(8.0),
                 child: Image.file(_image!),
               ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _descriptionController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  labelText: 'Enter a description (optional)',
+                ),
+              ),
+            ),
             ElevatedButton(
               onPressed: _takePicture,
               child: const Text('Take Picture'),
             ),
             ElevatedButton(
               onPressed: () {
-                final double expense = double.tryParse(_expenseController.text) ?? 0.0;
+                final double expense =
+                    double.tryParse(_expenseController.text) ?? 0.0;
                 _uploadExpenseWithImage(expense, _selectedCategory, _image);
                 _resetForm();
               },

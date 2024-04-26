@@ -197,7 +197,7 @@ class UserDatabase {
     }
   }
 
-  Future<void> setEx(double amount, String category, String? imageUrl) async {
+  Future<void> setEx(double amount, String category, String? imageUrl, String? desc) async {
     try {
       CollectionReference expenses = _firestore
           .collection('users')
@@ -211,6 +211,7 @@ class UserDatabase {
         'amount': amount,
         'category': category,
         'imageUrl': imageUrl, // Store the image URL
+        'description': desc,
         'createdAt': formattedDate,
       });
     } catch (e) {
@@ -272,6 +273,7 @@ class UserDatabase {
           'id': doc.id,
           'amount': doc.get('amount'),
           'category': doc.get('category'),
+          'description': doc.get('description'),
           'createdAt': doc.get('createdAt')
         });
       });
