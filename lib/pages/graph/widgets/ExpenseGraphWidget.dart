@@ -5,6 +5,9 @@ import 'package:smart_wallet/pages/graph/widgets/money_section.dart';
 import 'package:smart_wallet/pages/graph/widgets/pie_chart.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
 import 'package:smart_wallet/utils/constants/sizes.dart';
+import 'package:get/get.dart';
+import 'package:smart_wallet/pages/graph/graph.dart';
+import 'package:smart_wallet/pages/graph/widgets/ExpenseGraphWidget.dart';
 
 class ExpenseGraphWidget extends StatelessWidget {
   final double totalBudget;
@@ -64,7 +67,12 @@ class ExpenseGraphWidget extends StatelessWidget {
             ),
 
             // Pie Chart
-            Row(
+            InkWell(
+              onTap: () {
+                // Navigate to ExpenseGraph page
+                Get.to(() => ExpenseGraph());
+              },
+              child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Expanded(
@@ -85,6 +93,8 @@ class ExpenseGraphWidget extends StatelessWidget {
                 ),
               ],
             ),
+            ),
+            
 
             // Mini graphs
             Row(

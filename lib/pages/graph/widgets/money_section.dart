@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
 import 'package:smart_wallet/utils/constants/sizes.dart';
+import 'package:smart_wallet/pages/budget.dart';
 
 class moneySection extends StatelessWidget {
   const moneySection({
@@ -20,7 +21,12 @@ class moneySection extends StatelessWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          
+           InkWell(
+            onTap: () {
+              // Replace 'Budget()' with the actual route you want to navigate to
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Budget()));
+            },
+            child:
           Column(
             children: [
               Text(
@@ -37,7 +43,7 @@ class moneySection extends StatelessWidget {
                 ),
               ),
             ],
-          ),
+          ),),
           Column(
             children: [
               Text(
