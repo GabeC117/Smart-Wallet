@@ -40,9 +40,9 @@ class _navigationBarState extends State<navigationBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60.0,
+      height: 100.0,
       decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+        //borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
         // gradient: LinearGradient(
         //   begin: Alignment.topLeft,
         //   end: Alignment.bottomRight,
@@ -51,19 +51,22 @@ class _navigationBarState extends State<navigationBar> {
         color: SW_Colors.primary,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           IconButton(
+            iconSize: 40,
             onPressed: () => Get.to(() => Budget(),)?.then((value) {
               widget.refreshDataCallback();
             }),
             icon: const Icon(Icons.attach_money), 
           ),
           IconButton(
+            iconSize: 40,
             onPressed: () => Get.to(() => PicturePage(),),
             icon: const Icon(Icons.camera_enhance),
           ),
           IconButton(
+            iconSize: 40,
             onPressed: () => Get.to(() => ExpenseGraph(),),
             icon: const Icon(Icons.trending_up),
           ),
