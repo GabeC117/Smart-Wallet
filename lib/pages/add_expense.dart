@@ -94,9 +94,9 @@ class _AddExpenseState extends State<AddExpense> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Expense'),
+        title: Text('Add Expense'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
             widget.onUpdateBudgetPage?.call();
             Navigator.pop(context);
@@ -104,58 +104,64 @@ class _AddExpenseState extends State<AddExpense> {
         ),
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DropdownButton<String>(
-                isExpanded: true,
-                value: _selectedCategory,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategory = newValue!;
-                  });
-                },
-                items:
-                    _categories.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCategory = newValue!;
+                });
+              },
+              items: _categories.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                labelText: 'Select a Category',
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _expenseController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Enter an expense',
-                ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _expenseController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Enter an expense',
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
               ),
             ),
+            SizedBox(height: 16.0),
             if (_image != null)
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: Image.file(_image!),
               ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _descriptionController,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  labelText: 'Enter a description (optional)',
-                ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _descriptionController,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                labelText: 'Enter a description (optional)',
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
               ),
             ),
+            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _takePicture,
-              child: const Text('Take Picture'),
+              child: Text('Take Picture'),
             ),
+            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 if (_selectedCategory == 'Select a Category') {
@@ -180,12 +186,14 @@ class _AddExpenseState extends State<AddExpense> {
                 } else {
                   final double expense =
                       double.tryParse(_expenseController.text) ?? 0.0;
-                  final String? description = _descriptionController?.text; // Retrieve description text
-                  _uploadExpenseWithImage(expense, _selectedCategory, _image, description); // Pass description
+                  final String? description =
+                      _descriptionController?.text; // Retrieve description text
+                  _uploadExpenseWithImage(expense, _selectedCategory, _image,
+                      description); // Pass description
                   _resetForm();
                 }
               },
-              child: const Text('Add Expense'),
+              child: Text('Add Expense'),
             ),
           ],
         ),
