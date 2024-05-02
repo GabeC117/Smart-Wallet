@@ -45,7 +45,7 @@ class _AddExpenseState extends State<AddExpense> {
   }
 
   Future<void> _uploadExpenseWithImage(
-      double expense, String category, File? imageFile) async {
+      double expense, String category, File? imageFile, String? desc) async {
     String? imageUrl;
     // Upload the image to Firebase Storage if it exists
     if (imageFile != null) {
@@ -59,8 +59,26 @@ class _AddExpenseState extends State<AddExpense> {
 
     // Upload the expense to the database with the image URL
     UserDatabase userDatabase = UserDatabase();
-    await userDatabase.setEx(
-        expense, category, imageUrl, _descriptionController?.text);
+    await userDatabase.setEx(expense, category, imageUrl, desc);
+
+    // Show a pop-up to inform the user that the expense was saved successfully
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Expense Saved'),
+          content: Text('Your expense has been saved successfully.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _resetForm() {
@@ -140,10 +158,32 @@ class _AddExpenseState extends State<AddExpense> {
             ),
             ElevatedButton(
               onPressed: () {
-                final double expense =
-                    double.tryParse(_expenseController.text) ?? 0.0;
-                _uploadExpenseWithImage(expense, _selectedCategory, _image);
-                _resetForm();
+                if (_selectedCategory == 'Select a Category') {
+                  // Show a pop-up to inform the user that selecting a category is required
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Category Not Selected'),
+                        content: Text('Please select a category.'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  final double expense =
+                      double.tryParse(_expenseController.text) ?? 0.0;
+                  final String? description = _descriptionController?.text; // Retrieve description text
+                  _uploadExpenseWithImage(expense, _selectedCategory, _image, description); // Pass description
+                  _resetForm();
+                }
               },
               child: const Text('Add Expense'),
             ),
