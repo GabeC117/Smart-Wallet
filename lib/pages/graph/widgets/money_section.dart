@@ -53,9 +53,9 @@ class moneySection extends StatelessWidget {
               SizedBox(height: SW_Sizes.defaultSpace / 2),
               Text(
                 '\$ ${totalAmountSpent.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  color: SW_Colors.primary,
+                  color: _totalBudget - totalAmountSpent > 0 ? SW_Colors.primary : SW_Colors.error,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -80,9 +80,9 @@ class moneySection extends StatelessWidget {
               SizedBox(height: SW_Sizes.defaultSpace / 2),
               Text(
                 '\$ ${(_totalBudget - totalAmountSpent).toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 30,
-                  color: SW_Colors.primary,
+                  color: _totalBudget - totalAmountSpent > 0 ? SW_Colors.primary : SW_Colors.error,
                   fontWeight: FontWeight.bold,
                 ),
               ),

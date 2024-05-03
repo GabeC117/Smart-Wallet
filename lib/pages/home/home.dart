@@ -12,6 +12,8 @@ import 'package:get/get.dart';
 import 'package:smart_wallet/pages/graph/graph.dart';
 
 
+import 'package:smart_wallet/common/profile_picture/profile_picture.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -67,15 +69,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar (actions: <Widget>[
+      appBar: AppBar(
+        actions: [
           IconButton(
-            color: Colors.black,
-            iconSize: 35,
-            onPressed: () => Get.to(() => Account(),), // Ensure PicturePage is a defined widget
-            icon: const Icon(Icons.person),
+            iconSize: 65,
+            splashRadius: 25,
+            icon: const ProfilePicture(),
+            onPressed: () => Get.to(() => Account(),),
           ),
         ],
-        ),//title: const Text('Smart Wallet')),
+      ),
       drawer: const MyDrawer(),
       bottomNavigationBar:
           navigationBar(refreshData),

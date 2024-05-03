@@ -50,6 +50,7 @@ class MyDrawer extends StatelessWidget {
             ),
             Text("SmartWallet", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30) ,),
             // Home
+            SizedBox(height: 18),
             MyListTile(
               icon: Icons.home,
               text: 'HOME',
