@@ -40,9 +40,9 @@ class _navigationBarState extends State<navigationBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100.0,
+      height: 70.0,
       decoration: const BoxDecoration(
-        //borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
         // gradient: LinearGradient(
         //   begin: Alignment.topLeft,
         //   end: Alignment.bottomRight,
