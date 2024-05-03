@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_wallet/pages/add_expense.dart';
 import 'package:smart_wallet/classes/firebase_classes.dart';
-import 'package:intl/intl.dart';
 
 class Budget extends StatefulWidget {
   @override
@@ -9,10 +8,9 @@ class Budget extends StatefulWidget {
 }
 
 class _BudgetPageState extends State<Budget> {
-  final Map<String, double> _categoryBudgets = {};
+  Map<String, double> _categoryBudgets = {};
   List<Map<String, dynamic>> _expenses = [];
 
-  // Define categories for budgets
   final List<String> _budgetCategories = [
     'Food',
     'Transportation',
@@ -32,207 +30,131 @@ class _BudgetPageState extends State<Budget> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Budget Tracker'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                'Category Budgets',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+      body: ListView.builder(
+        itemCount: _budgetCategories.length,
+        itemBuilder: (context, index) {
+          String category = _budgetCategories[index];
+          double budget = _categoryBudgets[category] ?? 0.0;  // Use null-aware access
+          return ListTile(
+            title: Text(category),
+            subtitle: Text('\$${budget.toStringAsFixed(2)}'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.remove_red_eye),
+                  onPressed: () => _viewExpenses(category),
+                ),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => _editCategoryBudget(category, budget),
+                ),
+              ],
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _budgetCategories.map((category) {
-                double budget = _categoryBudgets.containsKey(category)
-                    ? _categoryBudgets[category]!
-                    : 0.0;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 4.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(category),
-                      Text('\$${budget.toStringAsFixed(2)}'),
-                      ElevatedButton(
-                        onPressed: () => _viewExpenses(category),
-                        child: Text('View Expenses'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => _editCategoryBudget(category, budget),
-                        child: Text('Edit'),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddExpensePopup(),
+        onPressed: _showAddExpensePopup,
         label: Text('Add Expense'),
         icon: Icon(Icons.add),
-        tooltip: 'Add Expense',
       ),
     );
   }
 
-  void _viewExpenses(String category) async {
-    try {
-      _expenses = await UserDatabase()
-          .getCategoryExpenses(category); // Store fetched expenses
-      print('Expenses fetched: $_expenses'); // Add this line to print expenses
-      if (_expenses.isEmpty) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('No Expenses Found'),
-              content: Text('No expenses recorded for $category.'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        return;
-      }
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                title: Text('Expenses for $category'),
-                content: SingleChildScrollView(
-                  child: ListBody(
-                    children: _expenses
-                        .map((expense) => ListTile(
-                              title: Text('Amount: \$${expense['amount']}'),
-                              subtitle: Text('Date: ${(expense['createdAt'])}'),
-                              trailing: IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  _deleteExpense(expense['id'], category);
-                                  setState(() {
-                                    _expenses.remove(expense);
-                                  });
-                                },
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text('Close'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      );
-    } catch (e) {
-      print('Error fetching expenses: $e');
-      // Handle error
-    }
-  }
-
-  void _deleteExpense(String expenseId, String category) async {
-    try {
-      // Retrieve the expense from _expenses list
-      var expense =
-          _expenses.firstWhere((expense) => expense['id'] == expenseId);
-      // Retrieve the imageUrl of the expense
-      String? imageUrl = expense['imageUrl'];
-
-      // If imageUrl exists, delete the image from Firebase Storage
-      if (imageUrl != null) {
-        await UserStorage().deleteFile(imageUrl);
-      }
-
-      // Delete the expense document
-      await UserDatabase().deleteExpense(expenseId);
-      print('Expense deleted successfully');
-    } catch (e) {
-      print('Error deleting expense: $e');
-      // Handle error
-    }
-  }
-
-  void _showAddExpensePopup() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            child: AddExpense(onUpdateBudgetPage: _fetchAndUpdateBudgets),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-          );
-        });
-  }
-
   void _fetchAndUpdateBudgets() async {
     try {
-      // Fetch budget for each category
       for (String category in _budgetCategories) {
-        double? categoryBudget =
-            await UserDatabase().getCategoryBudget(category);
-        if (categoryBudget != null) {
-          setState(() {
-            _categoryBudgets[category] = categoryBudget;
-          });
-        }
+        double? categoryBudget = await UserDatabase().getCategoryBudget(category);
+        setState(() {
+          _categoryBudgets[category] = categoryBudget ?? 0.0; // Default to 0.0 if null
+        });
       }
     } catch (e) {
       print('Error fetching budgets: $e');
     }
   }
 
-  void _editCategoryBudget(String category, double currentBudget) async {
-    final newBudget = await showDialog<double>(
+  void _viewExpenses(String category) async {
+    _expenses = await UserDatabase().getCategoryExpenses(category);
+    if (_expenses.isEmpty) {
+      _showNoExpensesDialog(category);
+    } else {
+      _showExpensesDialog(category);
+    }
+  }
+
+  void _showNoExpensesDialog(String category) {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        double? updatedBudget = currentBudget;
         return AlertDialog(
-          title: Text('Edit Budget for $category'),
-          content: TextField(
-            enabled: true,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'Enter new budget for $category',
+          title: Text('No Expenses Found'),
+          content: Text('No expenses recorded for $category.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
             ),
-            controller: TextEditingController(text: currentBudget.toString()),
-            onChanged: (value) {
-              try {
-                updatedBudget = double.parse(value);
-              } catch (e) {
-                // Handle parse error
-              }
-            },
+          ],
+        );
+      },
+    );
+  }
+
+  void _showExpensesDialog(String category) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Expenses for $category'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: _expenses.map((expense) => ListTile(
+                title: Text('Amount: \$${expense['amount']}'),
+                subtitle: Text('Date: ${expense['createdAt']}'),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () => _deleteExpense(expense['id'], category),
+                ),
+              )).toList(),
+            ),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: Text('Close'),
             ),
-            ElevatedButton(
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteExpense(String expenseId, String category) async {
+    await UserDatabase().deleteExpense(expenseId);
+    // Optionally update the expenses list immediately after deletion
+    _viewExpenses(category);
+  }
+
+  void _editCategoryBudget(String category, double currentBudget) async {
+    final newBudget = await showDialog<double>(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController _controller = TextEditingController(text: currentBudget.toString());
+        return AlertDialog(
+          title: Text('Edit Budget for $category'),
+          content: TextField(
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: 'Enter new budget for $category'),
+            controller: _controller,
+          ),
+          actions: <Widget>[
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
+            TextButton(
               onPressed: () {
+                double? updatedBudget = double.tryParse(_controller.text);
                 if (updatedBudget != null) {
                   Navigator.of(context).pop(updatedBudget);
                 }
@@ -244,16 +166,23 @@ class _BudgetPageState extends State<Budget> {
       },
     );
 
-    if (newBudget != null) {
-      try {
-        await UserDatabase().setCategoryBudget(category, newBudget);
-        setState(() {
-          _categoryBudgets[category] = newBudget;
-        });
-        print('Budget updated successfully');
-      } catch (e) {
-        print('Error updating budget: $e');
-      }
+    if (newBudget != null && newBudget != currentBudget) {
+      await UserDatabase().setCategoryBudget(category, newBudget);
+      setState(() {
+        _categoryBudgets[category] = newBudget;
+      });
     }
+  }
+
+  void _showAddExpensePopup() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: AddExpense(onUpdateBudgetPage: _fetchAndUpdateBudgets),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        );
+      },
+    );
   }
 }
