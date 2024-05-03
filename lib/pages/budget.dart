@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_wallet/pages/add_expense.dart';
 import 'package:smart_wallet/classes/firebase_classes.dart';
+import 'package:intl/intl.dart';
 
 class Budget extends StatefulWidget {
   @override
