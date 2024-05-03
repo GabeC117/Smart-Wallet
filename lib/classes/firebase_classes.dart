@@ -197,7 +197,8 @@ class UserDatabase {
     }
   }
 
-  Future<void> setEx(double amount, String category, String? imageUrl, String? desc) async {
+  Future<void> setEx(
+      double amount, String category, String? imageUrl, String? desc) async {
     try {
       CollectionReference expenses = _firestore
           .collection('users')
@@ -207,13 +208,25 @@ class UserDatabase {
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('yyyy-MM-dd hh:mm:ss a').format(now);
 
-      await expenses.doc(customId).set({
-        'amount': amount,
-        'category': category,
-        'imageUrl': imageUrl, // Store the image URL
-        'description': desc,
-        'createdAt': formattedDate,
-      });
+      // Check if description is not null or empty
+      if (desc != null && desc.isNotEmpty) {
+        await expenses.doc(customId).set({
+          'amount': amount,
+          'category': category,
+          'imageUrl': imageUrl,
+          'description': desc,
+          'createdAt': formattedDate,
+        });
+      } else {
+        // If description is null or empty, save it as an empty string
+        await expenses.doc(customId).set({
+          'amount': amount,
+          'category': category,
+          'imageUrl': imageUrl,
+          'description': '',
+          'createdAt': formattedDate,
+        });
+      }
     } catch (e) {
       print('Error setting expense: $e');
     }
@@ -274,7 +287,8 @@ class UserDatabase {
           'amount': doc.get('amount'),
           'category': doc.get('category'),
           'description': doc.get('description'),
-          'createdAt': doc.get('createdAt')
+          'createdAt': doc.get('createdAt'),
+          'imageUrl': doc.get('imageUrl')
         });
       });
 
@@ -389,6 +403,19 @@ class UserStorage {
       await uploadTask.whenComplete(() => print('File Uploaded'));
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<void> deleteFile(String imageUrl) async {
+    try {
+      // Create a reference to the image in Firebase Storage
+      Reference imageRef = storage.refFromURL(imageUrl);
+      // Delete the image
+      await imageRef.delete();
+      print('Image deleted successfully');
+    } catch (e) {
+      print('Error deleting image: $e');
+      throw e;
     }
   }
 }
