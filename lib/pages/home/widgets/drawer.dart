@@ -11,6 +11,7 @@ import 'package:smart_wallet/components/list_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_wallet/pages/login/login.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
+import 'package:smart_wallet/utils/constants/image_strings.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
@@ -42,9 +43,12 @@ class MyDrawer extends StatelessWidget {
         child: Column(
           children: <Widget>[
             // Header
-            const DrawerHeader(
-              child: Icon(Icons.person, size: 70),
+            DrawerHeader(
+              padding: EdgeInsets.fromLTRB(16, 36, 16, 0), margin: EdgeInsets.only(bottom: 0),
+              child: 
+                Image(image: AssetImage(SW_Images.MainLogo), width: 137, height: 137),
             ),
+            Text("SmartWallet", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30) ,),
             // Home
             MyListTile(
               icon: Icons.home,

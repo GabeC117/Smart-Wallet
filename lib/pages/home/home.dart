@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar (actions: <Widget>[
           IconButton(
-            color: SW_Colors.primary,
+            color: Colors.black,
             iconSize: 35,
             onPressed: () => Get.to(() => Account(),), // Ensure PicturePage is a defined widget
             icon: const Icon(Icons.person),

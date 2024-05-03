@@ -61,6 +61,8 @@ dev_dependencies:
 
   flutter_driver:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.10.0
     
   test: any
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -69,6 +71,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+
+flutter_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icons/app_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
