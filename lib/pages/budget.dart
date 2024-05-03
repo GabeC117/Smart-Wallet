@@ -153,6 +153,17 @@ class _BudgetPageState extends State<Budget> {
 
   void _deleteExpense(String expenseId, String category) async {
     try {
+      // Retrieve the expense from _expenses list
+      var expense = _expenses.firstWhere((expense) => expense['id'] == expenseId);
+      // Retrieve the imageUrl of the expense
+      String? imageUrl = expense['imageUrl'];
+
+      // If imageUrl exists, delete the image from Firebase Storage
+      if (imageUrl != null) {
+        await UserStorage().deleteFile(imageUrl);
+      }
+
+      // Delete the expense document
       await UserDatabase().deleteExpense(expenseId);
       print('Expense deleted successfully');
     } catch (e) {
