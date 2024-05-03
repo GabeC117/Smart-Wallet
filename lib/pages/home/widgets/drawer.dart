@@ -2,19 +2,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:smart_wallet/common/profile_picture/profile_picture.dart';
 import 'package:smart_wallet/components/list_tile.dart';
+import 'package:smart_wallet/main.dart';
 import 'package:smart_wallet/pages/account/account.dart';
 import 'package:smart_wallet/pages/budget.dart';
+import 'package:smart_wallet/pages/home/home.dart';
+import 'package:smart_wallet/components/list_tile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_wallet/pages/login/login.dart';
 import 'package:smart_wallet/utils/constants/colors.dart';
-import 'package:smart_wallet/utils/constants/sizes.dart';
-import 'package:smart_wallet/utils/helpers/helper_functions.dart'; // Import the helper function to check dark mode
+import 'package:smart_wallet/utils/constants/image_strings.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key? key, this.profilePictureUrl}) : super(key: key);
-
-  final String? profilePictureUrl;
+  const MyDrawer({
+    Key? key,
+  }) : super(key: key);
 
   void logOut(BuildContext context) {
     try {
@@ -31,9 +33,6 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser!;
-    final dark = SW_Helpers.isDarkMode(context); // Check if dark mode is enabled
-
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topRight: Radius.circular(30),
@@ -41,49 +40,50 @@ class MyDrawer extends StatelessWidget {
       ),
       child: Drawer(
         backgroundColor: SW_Colors.primary,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 50.0),
-          child: Column(
-            children: <Widget>[
-              // Header with profile picture
-              const ProfilePicture(),
-              const SizedBox(height: SW_Sizes.spaceBtwSections,),
-              // Home
-              MyListTile(
-                icon: Icons.home,
-                text: 'HOME',
-                onTap: () => Navigator.pop(context),
-              ),
+        child: Column(
+          children: <Widget>[
+            // Header
+            DrawerHeader(
+              padding: EdgeInsets.fromLTRB(16, 36, 16, 0), margin: EdgeInsets.only(bottom: 0),
+              child: 
+                Image(image: AssetImage(SW_Images.MainLogo), width: 137, height: 137),
+            ),
+            Text("SmartWallet", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30) ,),
+            // Home
+            SizedBox(height: 18),
+            MyListTile(
+              icon: Icons.home,
+              text: 'HOME',
+              onTap: () => Navigator.pop(context),
+            ),
 
-              // Profile
-              MyListTile(
-                icon: Icons.person,
-                text: 'ACCOUNT',
-                onTap: () => Get.to(() => Account()),
-              ),
+            //Profile
+            MyListTile(
+              icon: Icons.person,
+              text: 'ACCOUNT',
+              onTap: () => Get.to(() => Account(),),
+            ),
 
-              // Budget
-              MyListTile(
-                icon: Iconsax.money,
-                text: 'BUDGET',
-                onTap: () => Get.to(() => Budget()),
-              ),
+            // Budget
+            MyListTile(
+              icon: Iconsax.money,
+              text: 'BUDGET',
+              onTap: () => Get.to(() => Budget(),),
+            ),
 
-              // Log Out
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 50.0),
-                child: MyListTile(
-                  icon: Icons.logout,
-                  text: 'LOG OUT',
-                  onTap: () => logOut(context),
-                ),
+            // Log Out
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50.0),
+              child: MyListTile(
+                icon: Icons.logout,
+                text: 'LOG OUT',
+                onTap: () => logOut(context),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-

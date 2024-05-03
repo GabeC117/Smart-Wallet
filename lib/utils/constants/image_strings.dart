@@ -2,6 +2,8 @@ class SW_Images {
   static const String darkAppLogo = 'assets/logos/wallet-white.png';
   static const String lightAppLogo = 'assets/logos/wallet.png';
 
+  static const String MainLogo = 'assets/logos/app_icon.png';
+
   static const String google = 'assets/logos/google-icon.png';
   static const String apple = 'assets/logos/apple-icon.png';
   static const String appleWhite = 'assets/logos/apple-white-icon.png';

@@ -70,15 +70,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Smart Wallet'),
         actions: [
           IconButton(
             iconSize: 65,
             splashRadius: 25,
             icon: const ProfilePicture(),
-            onPressed: () {
-              // Add your onPressed functionality here
-            },
+            onPressed: () => Get.to(() => Account(),),
           ),
         ],
       ),

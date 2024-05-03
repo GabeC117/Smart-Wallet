@@ -112,7 +112,7 @@ class _PicturePageState extends State<PicturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Picture Page'),
+        title: const Text('Your Reciepts'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),

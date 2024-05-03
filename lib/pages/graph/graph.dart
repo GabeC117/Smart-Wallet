@@ -20,7 +20,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
     'Food': Color.fromARGB(255, 255, 186, 59),
     'Transportation': Color.fromARGB(255, 248, 130, 169),
     'Utilities': Color.fromARGB(255, 255, 102, 102),
-    'Other': Color.fromARGB(255, 132, 255, 101),
+    'Other': Color.fromARGB(255, 126, 235, 124),
     'Entertainment': Color.fromARGB(255, 0, 195, 255),
   };
   double _totalBudget = 0.0;
@@ -57,7 +57,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Expense Pie Chart'),
+        title: const Text('Your Expense Chart'),
       ),
       body: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -117,7 +117,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
               }).toList();
 
               pieChartData.add(PieChartSectionData(
-                color: Color.fromARGB(255, 189, 189, 189),
+                color: Color.fromARGB(127, 189, 189, 189),
                 value: remainingBudget,
                 title: '',
               ));
@@ -134,12 +134,12 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                 List<PieChartSectionData> sectionData = [
                   PieChartSectionData(
                     color: _categoryColors[entry.key]!,
-                    value: sectionValue,
+                    value: sectionValue > _totalBudget ? _totalBudget : sectionValue,
                     title: "",
                   ),
                   PieChartSectionData(
-                    color: Color.fromARGB(255, 189, 189, 189),
-                    value: remainingBudget,
+                    color: Color.fromARGB(0, 189, 189, 189),
+                    value: remainingBudget < 0 ? 0 : remainingBudget,
                     title: '',
                   ),
                 ];
@@ -159,7 +159,7 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                                   sections: sectionData,
                                   borderData: FlBorderData(show: false),
                                   sectionsSpace: 0,
-                                  centerSpaceRadius: 7,
+                                  centerSpaceRadius: 16,
                                 ),
                               ),
                             ],
@@ -182,9 +182,9 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                           children: [
                             Text(
                               '${(categoryPercentage).toStringAsFixed(2)}%',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: SW_Colors.primary,
+                                color: categoryPercentage < 100 ? SW_Colors.primary : SW_Colors.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -263,9 +263,11 @@ class _ExpenseGraphState extends State<ExpenseGraph> {
                           ),
                           Text(
                             '${percentageUsed.toStringAsFixed(2)}%',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
-                              color: SW_Colors.primary,
+                              color: _totalBudget - totalAmountSpent > 0
+                                  ? SW_Colors.primary
+                                  : SW_Colors.error,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

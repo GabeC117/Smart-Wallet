@@ -39,7 +39,7 @@ class ExpenseGraphWidget extends StatelessWidget {
 
     // Add remaining budget to pie chart
     pieChartData.add(PieChartSectionData(
-      color: Color.fromARGB(255, 189, 189, 189),
+      color: Color.fromARGB(127, 189, 189, 189),
       value: remainingBudget,
       title: '',
     ));
@@ -105,9 +105,9 @@ class ExpenseGraphWidget extends StatelessWidget {
                 ),
                 Text(
                   '${((totalAmountSpent / totalBudget) * 100).toStringAsFixed(2)}%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
-                    color: SW_Colors.primary,
+                    color: totalBudget - totalAmountSpent > 0 ? SW_Colors.primary : SW_Colors.error,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
